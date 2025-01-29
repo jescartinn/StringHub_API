@@ -1,0 +1,6 @@
+@StringHub_API_HostAddress = http://localhost:5127
+
+GET {{StringHub_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
