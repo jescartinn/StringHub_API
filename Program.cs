@@ -1,15 +1,25 @@
+using StringHub.Repositories;
+using StringHub.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Obtener la cadena de conexión desde el archivo de configuración
+var connectionString = builder.Configuration.GetConnectionString("StringHub");
+
+// Registrar los repositorios con la cadena de conexión
+builder.Services.AddScoped<IRaquetaRepository>(provider =>
+    new RaquetaRepository(connectionString));  
+
+// Registrar los servicios
+builder.Services.AddScoped<IRaquetaService, RaquetaService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configurar Swagger en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,9 +27,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
