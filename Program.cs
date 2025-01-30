@@ -10,8 +10,12 @@ var connectionString = builder.Configuration.GetConnectionString("StringHubDB");
 builder.Services.AddScoped<IRaquetaRepository>(provider =>
     new RaquetaRepository(connectionString));  
 
+builder.Services.AddScoped<IUsuarioRepository>(provider =>
+    new UsuarioRepository(connectionString));  
+
 // Registrar los servicios
 builder.Services.AddScoped<IRaquetaService, RaquetaService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
