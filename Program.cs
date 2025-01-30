@@ -4,7 +4,7 @@ using StringHub.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Obtener la cadena de conexión desde el archivo de configuración
-var connectionString = builder.Configuration.GetConnectionString("StringHub");
+var connectionString = builder.Configuration.GetConnectionString("StringHubDB");
 
 // Registrar los repositorios con la cadena de conexión
 builder.Services.AddScoped<IRaquetaRepository>(provider =>
