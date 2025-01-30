@@ -118,3 +118,30 @@ BEGIN
     INNER JOIN inserted i ON u.UsuarioId = i.UsuarioId
 END;
 GO
+
+-- Primero necesitamos asegurarnos de tener algunos usuarios
+INSERT INTO Usuarios (Email, Contraseña, Nombre, Apellido, Telefono, TipoUsuario)
+VALUES 
+    ('juan@email.com', 'password123', 'Juan', 'Pérez', '666111222', 'Cliente'),
+    ('ana@email.com', 'password123', 'Ana', 'García', '666333444', 'Cliente'),
+    ('carlos@email.com', 'password123', 'Carlos', 'Martínez', '666555666', 'Cliente');
+GO
+
+-- Ahora insertamos las raquetas
+INSERT INTO Raquetas (UsuarioId, Marca, Modelo, NumeroSerie, Descripcion, FechaCreacion)
+VALUES
+    -- Raquetas de Juan (UsuarioId = 1)
+    (1, 'Babolat', 'Pure Drive', 'BD2023001', 'Raqueta principal para competición', GETDATE()),
+    (1, 'Head', 'Speed Pro', 'HS2023101', 'Raqueta de respaldo', GETDATE()),
+    
+    -- Raquetas de Ana (UsuarioId = 2)
+    (2, 'Wilson', 'Blade', 'WB2023201', 'Raqueta para tierra batida', GETDATE()),
+    (2, 'Yonex', 'EZONE', 'YE2023301', 'Nueva raqueta, en período de adaptación', GETDATE()),
+    (2, 'Wilson', 'Pro Staff', 'WP2023401', 'Raqueta antigua', GETDATE()),
+    
+    -- Raquetas de Carlos (UsuarioId = 3)
+    (3, 'Head', 'Prestige', 'HP2023501', 'Raqueta principal', GETDATE()),
+    (3, 'Babolat', 'Pure Aero', 'BA2023601', 'Raqueta para entrenamiento', GETDATE()),
+    (3, 'Dunlop', 'FX500', 'DF2023701', 'Raqueta nueva sin estrenar', GETDATE()),
+    (3, 'Prince', 'Phantom', 'PP2023801', 'Raqueta para pista rápida', GETDATE());
+GO
