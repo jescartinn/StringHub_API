@@ -7,7 +7,7 @@ GO
 
 -- Tabla de Usuarios
 CREATE TABLE Usuarios (
-    UsuarioID INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioId INT IDENTITY(1,1) PRIMARY KEY,
     Email VARCHAR(100) NOT NULL UNIQUE,
     Contraseña VARCHAR(255) NOT NULL,
     Nombre VARCHAR(50) NOT NULL,
@@ -20,19 +20,19 @@ CREATE TABLE Usuarios (
 
 -- Tabla de Raquetas
 CREATE TABLE Raquetas (
-    RaquetaID INT IDENTITY(1,1) PRIMARY KEY,
-    UsuarioID INT NOT NULL,
+    RaquetaId INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioId INT NOT NULL,
     Marca VARCHAR(50) NOT NULL,
     Modelo VARCHAR(50) NOT NULL,
     NumeroSerie VARCHAR(50),
     Descripcion TEXT,
     FechaCreacion DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
+    FOREIGN KEY (UsuarioId) REFERENCES Usuarios(UsuarioId)
 );
 
 -- Tabla de Servicios Disponibles
 CREATE TABLE Servicios (
-    ServicioID INT IDENTITY(1,1) PRIMARY KEY,
+    ServicioId INT IDENTITY(1,1) PRIMARY KEY,
     NombreServicio VARCHAR(100) NOT NULL,
     Descripcion TEXT,
     PrecioBase DECIMAL(10,2) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE Servicios (
 
 -- Tabla de Cuerdas Disponibles
 CREATE TABLE Cuerdas (
-    CuerdaID INT IDENTITY(1,1) PRIMARY KEY,
+    CuerdaId INT IDENTITY(1,1) PRIMARY KEY,
     Marca VARCHAR(50) NOT NULL,
     Modelo VARCHAR(50) NOT NULL,
     Calibre VARCHAR(20) NOT NULL,
@@ -55,11 +55,11 @@ CREATE TABLE Cuerdas (
 
 -- Tabla de Órdenes de Encordado
 CREATE TABLE OrdenesEncordado (
-    OrdenID INT IDENTITY(1,1) PRIMARY KEY,
-    UsuarioID INT NOT NULL,
-    RaquetaID INT NOT NULL,
-    ServicioID INT NOT NULL,
-    CuerdaID INT,  -- Puede ser NULL si el cliente trae su propia cuerda
+    OrdenId INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioId INT NOT NULL,
+    RaquetaId INT NOT NULL,
+    ServicioId INT NOT NULL,
+    CuerdaId INT,  -- Puede ser NULL si el cliente trae su propia cuerda
     TensionVertical DECIMAL(4,1) NOT NULL,
     TensionHorizontal DECIMAL(4,1),
     Estado VARCHAR(20) NOT NULL CHECK (Estado IN ('Pendiente', 'En Proceso', 'Completado', 'Entregado', 'Cancelado')),
@@ -67,43 +67,43 @@ CREATE TABLE OrdenesEncordado (
     FechaCreacion DATETIME DEFAULT GETDATE(),
     FechaCompletado DATETIME,
     PrecioTotal DECIMAL(10,2) NOT NULL,
-    EncordadorID INT,  -- ID del encordador asignado
-    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID),
-    FOREIGN KEY (RaquetaID) REFERENCES Raquetas(RaquetaID),
-    FOREIGN KEY (ServicioID) REFERENCES Servicios(ServicioID),
-    FOREIGN KEY (CuerdaID) REFERENCES Cuerdas(CuerdaID),
-    FOREIGN KEY (EncordadorID) REFERENCES Usuarios(UsuarioID)
+    EncordadorId INT,  -- ID del encordador asignado
+    FOREIGN KEY (UsuarioId) REFERENCES Usuarios(UsuarioId),
+    FOREIGN KEY (RaquetaId) REFERENCES Raquetas(RaquetaId),
+    FOREIGN KEY (ServicioId) REFERENCES Servicios(ServicioId),
+    FOREIGN KEY (CuerdaId) REFERENCES Cuerdas(CuerdaId),
+    FOREIGN KEY (EncordadorId) REFERENCES Usuarios(UsuarioId)
 );
 
 -- Tabla de Horarios de Disponibilidad
 CREATE TABLE Disponibilidad (
-    DisponibilidadID INT IDENTITY(1,1) PRIMARY KEY,
-    EncordadorID INT NOT NULL,
+    DisponibilidadId INT IDENTITY(1,1) PRIMARY KEY,
+    EncordadorId INT NOT NULL,
     DiaSemana TINYINT NOT NULL CHECK (DiaSemana BETWEEN 1 AND 7),
     HoraInicio TIME NOT NULL,
     HoraFin TIME NOT NULL,
-    FOREIGN KEY (EncordadorID) REFERENCES Usuarios(UsuarioID)
+    FOREIGN KEY (EncordadorId) REFERENCES Usuarios(UsuarioId)
 );
 
 -- Tabla de Historial de Tensiones
 CREATE TABLE HistorialTensiones (
-    HistorialID INT IDENTITY(1,1) PRIMARY KEY,
-    RaquetaID INT NOT NULL,
-    OrdenID INT NOT NULL,
+    HistorialId INT IDENTITY(1,1) PRIMARY KEY,
+    RaquetaId INT NOT NULL,
+    OrdenId INT NOT NULL,
     TensionVertical DECIMAL(4,1) NOT NULL,
     TensionHorizontal DECIMAL(4,1),
-    CuerdaID INT,
+    CuerdaId INT,
     Fecha DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (RaquetaID) REFERENCES Raquetas(RaquetaID),
-    FOREIGN KEY (OrdenID) REFERENCES OrdenesEncordado(OrdenID),
-    FOREIGN KEY (CuerdaID) REFERENCES Cuerdas(CuerdaID)
+    FOREIGN KEY (RaquetaId) REFERENCES Raquetas(RaquetaId),
+    FOREIGN KEY (OrdenId) REFERENCES OrdenesEncordado(OrdenId),
+    FOREIGN KEY (CuerdaId) REFERENCES Cuerdas(CuerdaId)
 );
 
 -- Índices para mejorar el rendimiento
 CREATE INDEX IX_OrdenesEncordado_Estado ON OrdenesEncordado(Estado);
 CREATE INDEX IX_OrdenesEncordado_FechaCreacion ON OrdenesEncordado(FechaCreacion);
-CREATE INDEX IX_Raquetas_UsuarioID ON Raquetas(UsuarioID);
-CREATE INDEX IX_HistorialTensiones_RaquetaID ON HistorialTensiones(RaquetaID);
+CREATE INDEX IX_Raquetas_UsuarioId ON Raquetas(UsuarioId);
+CREATE INDEX IX_HistorialTensiones_RaquetaId ON HistorialTensiones(RaquetaId);
 GO
 
 -- Trigger para actualizar UltimaModificacion en Usuarios
@@ -115,6 +115,6 @@ BEGIN
     UPDATE Usuarios
     SET UltimaModificacion = GETDATE()
     FROM Usuarios u
-    INNER JOIN inserted i ON u.UsuarioID = i.UsuarioID
+    INNER JOIN inserted i ON u.UsuarioId = i.UsuarioId
 END;
 GO
