@@ -145,3 +145,46 @@ VALUES
     (3, 'Dunlop', 'FX500', 'DF2023701', 'Raqueta nueva sin estrenar', GETDATE()),
     (3, 'Prince', 'Phantom', 'PP2023801', 'Raqueta para pista rápida', GETDATE());
 GO
+
+-- Inserts para cuerdas Babolat
+INSERT INTO Cuerdas (Marca, Modelo, Calibre, Material, Color, Precio, Stock, Activo)
+VALUES 
+    ('Babolat', 'RPM Blast', '1.25', 'Poliéster', 'Negro', 15.99, 50, 1),
+    ('Babolat', 'VS Touch', '1.30', 'Tripa Natural', 'Natural', 39.99, 20, 1),
+    ('Babolat', 'Xcel', '1.30', 'Multifilamento', 'Azul', 19.99, 30, 1),
+    ('Babolat', 'Pro Hurricane', '1.25', 'Poliéster', 'Negro', 14.99, 40, 1);
+
+-- Inserts para cuerdas Wilson
+INSERT INTO Cuerdas (Marca, Modelo, Calibre, Material, Color, Precio, Stock, Activo)
+VALUES 
+    ('Wilson', 'NXT', '1.30', 'Multifilamento', 'Natural', 24.99, 35, 1),
+    ('Wilson', 'Revolve', '1.25', 'Poliéster', 'Gris', 16.99, 45, 1),
+    ('Wilson', 'Champions Choice', '1.30', 'Híbrido', 'Natural/Gris', 34.99, 25, 1);
+
+-- Inserts para cuerdas Luxilon
+INSERT INTO Cuerdas (Marca, Modelo, Calibre, Material, Color, Precio, Stock, Activo)
+VALUES 
+    ('Luxilon', 'Alu Power', '1.25', 'Poliéster', 'Plata', 19.99, 40, 1),
+    ('Luxilon', 'Big Banger Original', '1.30', 'Poliéster', 'Natural', 18.99, 35, 1),
+    ('Luxilon', '4G', '1.25', 'Poliéster', 'Oro', 19.99, 30, 1);
+
+-- Inserts para cuerdas Head
+INSERT INTO Cuerdas (Marca, Modelo, Calibre, Material, Color, Precio, Stock, Activo)
+VALUES 
+    ('Head', 'Hawk', '1.25', 'Poliéster', 'Gris', 15.99, 40, 1),
+    ('Head', 'Velocity MLT', '1.30', 'Multifilamento', 'Natural', 21.99, 30, 1),
+    ('Head', 'Lynx', '1.25', 'Poliéster', 'Negro', 16.99, 35, 1);
+
+-- Inserts para cuerdas Yonex
+INSERT INTO Cuerdas (Marca, Modelo, Calibre, Material, Color, Precio, Stock, Activo)
+VALUES 
+    ('Yonex', 'Poly Tour Pro', '1.25', 'Poliéster', 'Negro', 17.99, 35, 1),
+    ('Yonex', 'Multi-Sensa', '1.30', 'Multifilamento', 'Natural', 22.99, 25, 1);
+
+-- Inserts para cuerdas Tecnifibre
+INSERT INTO Cuerdas (Marca, Modelo, Calibre, Material, Color, Precio, Stock, Activo)
+VALUES 
+    ('Tecnifibre', 'Black Code', '1.24', 'Poliéster', 'Negro', 16.99, 30, 1),
+    ('Tecnifibre', 'NRG2', '1.30', 'Multifilamento', 'Natural', 23.99, 25, 1),
+    ('Tecnifibre', 'X-One Biphase', '1.30', 'Multifilamento', 'Rojo', 24.99, 20, 1);
+GO
