@@ -119,7 +119,7 @@ BEGIN
 END;
 GO
 
--- Primero necesitamos asegurarnos de tener algunos usuarios
+-- Inserts tabla Usuarios
 INSERT INTO Usuarios (Email, Contraseña, Nombre, Apellido, Telefono, TipoUsuario)
 VALUES 
     ('juan@email.com', 'password123', 'Juan', 'Pérez', '666111222', 'Cliente'),
@@ -127,7 +127,7 @@ VALUES
     ('carlos@email.com', 'password123', 'Carlos', 'Martínez', '666555666', 'Cliente');
 GO
 
--- Ahora insertamos las raquetas
+-- Inserts tabla Raquetas
 INSERT INTO Raquetas (UsuarioId, Marca, Modelo, NumeroSerie, Descripcion, FechaCreacion)
 VALUES
     -- Raquetas de Juan (UsuarioId = 1)
