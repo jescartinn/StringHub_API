@@ -13,9 +13,13 @@ builder.Services.AddScoped<IRaquetaRepository>(provider =>
 builder.Services.AddScoped<IUsuarioRepository>(provider =>
     new UsuarioRepository(connectionString));  
 
+builder.Services.AddScoped<ICuerdaRepository>(provider =>
+    new CuerdaRepository(connectionString));
+
 // Registrar los servicios
 builder.Services.AddScoped<IRaquetaService, RaquetaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ICuerdaService, CuerdaService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
