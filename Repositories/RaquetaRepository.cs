@@ -17,7 +17,7 @@ public class RaquetaRepository : IRaquetaRepository
         var raquetas = new List<Raqueta>();
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(
-            "SELECT RaquetaId, Marca, Modelo, Precio, NumeroSerie, Peso, Descripcion, UserId, FechaCreacion " +
+            "SELECT RaquetaId, UsuarioId, Marca, Modelo, NumeroSerie, Descripcion, FechaCreacion " +
             "FROM Raquetas ORDER BY Marca", connection);
 
         await connection.OpenAsync();
@@ -34,7 +34,7 @@ public class RaquetaRepository : IRaquetaRepository
     {
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(
-            "SELECT RaquetaId, Marca, Modelo, Precio, NumeroSerie, Peso, Descripcion, UserId, FechaCreacion " +
+            "SELECT RaquetaId, UsuarioId, Marca, Modelo, NumeroSerie, Descripcion, FechaCreacion " +
             "FROM Raquetas WHERE RaquetaId = @Id", connection);
         
         command.Parameters.AddWithValue("@Id", id);
@@ -50,10 +50,10 @@ public class RaquetaRepository : IRaquetaRepository
         var raquetas = new List<Raqueta>();
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(
-            "SELECT RaquetaId, Marca, Modelo, Precio, NumeroSerie, Peso, Descripcion, UserId, FechaCreacion " +
-            "FROM Raquetas WHERE UserId = @UserId ORDER BY FechaCreacion DESC", connection);
+            "SELECT RaquetaId, UsuarioId, Marca, Modelo, NumeroSerie, Descripcion, FechaCreacion " +
+            "FROM Raquetas WHERE UsuarioId = @UsuarioId ORDER BY FechaCreacion DESC", connection);
         
-        command.Parameters.AddWithValue("@UserId", userId);
+        command.Parameters.AddWithValue("@UsuarioId", userId);
 
         await connection.OpenAsync();
         using var reader = await command.ExecuteReaderAsync();
@@ -69,8 +69,8 @@ public class RaquetaRepository : IRaquetaRepository
     {
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(
-            "INSERT INTO Raquetas (Marca, Modelo, Precio, NumeroSerie, Peso, Descripcion, UserId, FechaCreacion) " +
-            "VALUES (@Marca, @Modelo, @Precio, @NumeroSerie, @Peso, @Descripcion, @UserId, @FechaCreacion); " +
+            "INSERT INTO Raquetas (UsuarioId, Marca, Modelo, NumeroSerie, Descripcion, FechaCreacion) " +
+            "VALUES (@UsuarioId, @Marca, @Modelo, @NumeroSerie, @Descripcion, @FechaCreacion); " +
             "SELECT CAST(SCOPE_IDENTITY() as int)", connection);
 
         SetParameters(command, raqueta);
@@ -86,9 +86,9 @@ public class RaquetaRepository : IRaquetaRepository
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(
             "UPDATE Raquetas SET " +
-            "Marca = @Marca, Modelo = @Modelo, Precio = @Precio, " +
-            "NumeroSerie = @NumeroSerie, Peso = @Peso, " +
-            "Descripcion = @Descripcion, UserId = @UserId " +
+            "UsuarioId = @UsuarioId, Marca = @Marca, Modelo = @Modelo, " +
+            "NumeroSerie = @NumeroSerie, Descripcion = @Descripcion, " +
+            "FechaCreacion = @FechaCreacion " +
             "WHERE RaquetaId = @RaquetaId", connection);
 
         SetParameters(command, raqueta);
@@ -137,13 +137,11 @@ public class RaquetaRepository : IRaquetaRepository
         return new Raqueta
         {
             RaquetaId = reader.GetInt32(reader.GetOrdinal("RaquetaId")),
+            UsuarioId = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
             Marca = reader.GetString(reader.GetOrdinal("Marca")),
             Modelo = reader.GetString(reader.GetOrdinal("Modelo")),
-            Precio = reader.GetDouble(reader.GetOrdinal("Precio")),
             NumeroSerie = reader.IsDBNull(reader.GetOrdinal("NumeroSerie")) ? null : reader.GetString(reader.GetOrdinal("NumeroSerie")),
-            Peso = reader.GetDouble(reader.GetOrdinal("Peso")),
             Descripcion = reader.IsDBNull(reader.GetOrdinal("Descripcion")) ? null : reader.GetString(reader.GetOrdinal("Descripcion")),
-            UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
             FechaCreacion = reader.GetDateTime(reader.GetOrdinal("FechaCreacion"))
         };
     }
@@ -152,11 +150,9 @@ public class RaquetaRepository : IRaquetaRepository
     {
         command.Parameters.AddWithValue("@Marca", raqueta.Marca);
         command.Parameters.AddWithValue("@Modelo", raqueta.Modelo);
-        command.Parameters.AddWithValue("@Precio", raqueta.Precio);
         command.Parameters.AddWithValue("@NumeroSerie", (object?)raqueta.NumeroSerie ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Peso", raqueta.Peso);
         command.Parameters.AddWithValue("@Descripcion", (object?)raqueta.Descripcion ?? DBNull.Value);
-        command.Parameters.AddWithValue("@UserId", raqueta.UserId);
+        command.Parameters.AddWithValue("@UsuarioId", raqueta.UsuarioId);
         command.Parameters.AddWithValue("@FechaCreacion", raqueta.FechaCreacion);
     }
 }
