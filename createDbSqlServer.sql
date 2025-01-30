@@ -1,120 +1,120 @@
 -- Crear la base de datos
-CREATE DATABASE StringHub;
+CREATE DATABASE StringHubDB;
 GO
 
-USE StringHub;
+USE StringHubDB;
 GO
 
 -- Tabla de Usuarios
-CREATE TABLE Users (
-    UserID INT IDENTITY(1,1) PRIMARY KEY,
+CREATE TABLE Usuarios (
+    UsuarioID INT IDENTITY(1,1) PRIMARY KEY,
     Email VARCHAR(100) NOT NULL UNIQUE,
-    Password VARCHAR(255) NOT NULL,
-    FirstName VARCHAR(50) NOT NULL,
-    LastName VARCHAR(50) NOT NULL,
-    Phone VARCHAR(20),
-    UserType VARCHAR(20) NOT NULL CHECK (UserType IN ('Cliente', 'Encordador', 'Admin')),
-    Created DATETIME DEFAULT GETDATE(),
-    LastModified DATETIME DEFAULT GETDATE()
+    Contraseña VARCHAR(255) NOT NULL,
+    Nombre VARCHAR(50) NOT NULL,
+    Apellido VARCHAR(50) NOT NULL,
+    Telefono VARCHAR(20),
+    TipoUsuario VARCHAR(20) NOT NULL CHECK (TipoUsuario IN ('Cliente', 'Encordador', 'Admin')),
+    FechaCreacion DATETIME DEFAULT GETDATE(),
+    UltimaModificacion DATETIME DEFAULT GETDATE()
 );
 
 -- Tabla de Raquetas
-CREATE TABLE Racquets (
-    RacquetID INT IDENTITY(1,1) PRIMARY KEY,
-    UserID INT NOT NULL,
-    Brand VARCHAR(50) NOT NULL,
-    Model VARCHAR(50) NOT NULL,
-    SerialNumber VARCHAR(50),
-    Description TEXT,
-    Created DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+CREATE TABLE Raquetas (
+    RaquetaID INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioID INT NOT NULL,
+    Marca VARCHAR(50) NOT NULL,
+    Modelo VARCHAR(50) NOT NULL,
+    NumeroSerie VARCHAR(50),
+    Descripcion TEXT,
+    FechaCreacion DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
 );
 
 -- Tabla de Servicios Disponibles
-CREATE TABLE Services (
-    ServiceID INT IDENTITY(1,1) PRIMARY KEY,
-    ServiceName VARCHAR(100) NOT NULL,
-    Description TEXT,
-    BasePrice DECIMAL(10,2) NOT NULL,
-    EstimatedTime INT NOT NULL, -- Tiempo estimado en minutos
-    Active BIT DEFAULT 1
+CREATE TABLE Servicios (
+    ServicioID INT IDENTITY(1,1) PRIMARY KEY,
+    NombreServicio VARCHAR(100) NOT NULL,
+    Descripcion TEXT,
+    PrecioBase DECIMAL(10,2) NOT NULL,
+    TiempoEstimado INT NOT NULL, -- Tiempo estimado en minutos
+    Activo BIT DEFAULT 1
 );
 
 -- Tabla de Cuerdas Disponibles
-CREATE TABLE Strings (
-    StringID INT IDENTITY(1,1) PRIMARY KEY,
-    Brand VARCHAR(50) NOT NULL,
-    Model VARCHAR(50) NOT NULL,
-    Gauge VARCHAR(20) NOT NULL,
+CREATE TABLE Cuerdas (
+    CuerdaID INT IDENTITY(1,1) PRIMARY KEY,
+    Marca VARCHAR(50) NOT NULL,
+    Modelo VARCHAR(50) NOT NULL,
+    Calibre VARCHAR(20) NOT NULL,
     Material VARCHAR(50) NOT NULL,
     Color VARCHAR(30),
-    Price DECIMAL(10,2) NOT NULL,
+    Precio DECIMAL(10,2) NOT NULL,
     Stock INT DEFAULT 0,
-    Active BIT DEFAULT 1
+    Activo BIT DEFAULT 1
 );
 
 -- Tabla de Órdenes de Encordado
-CREATE TABLE StringingOrders (
-    OrderID INT IDENTITY(1,1) PRIMARY KEY,
-    UserID INT NOT NULL,
-    RacquetID INT NOT NULL,
-    ServiceID INT NOT NULL,
-    StringID INT,  -- Puede ser NULL si el cliente trae su propia cuerda
-    MainTension DECIMAL(4,1) NOT NULL,
-    CrossTension DECIMAL(4,1),
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Pendiente', 'En Proceso', 'Completado', 'Entregado', 'Cancelado')),
-    Comments TEXT,
-    Created DATETIME DEFAULT GETDATE(),
-    Completed DATETIME,
-    TotalPrice DECIMAL(10,2) NOT NULL,
-    StringerID INT,  -- ID del encordador asignado
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (RacquetID) REFERENCES Racquets(RacquetID),
-    FOREIGN KEY (ServiceID) REFERENCES Services(ServiceID),
-    FOREIGN KEY (StringID) REFERENCES Strings(StringID),
-    FOREIGN KEY (StringerID) REFERENCES Users(UserID)
+CREATE TABLE OrdenesEncordado (
+    OrdenID INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioID INT NOT NULL,
+    RaquetaID INT NOT NULL,
+    ServicioID INT NOT NULL,
+    CuerdaID INT,  -- Puede ser NULL si el cliente trae su propia cuerda
+    TensionVertical DECIMAL(4,1) NOT NULL,
+    TensionHorizontal DECIMAL(4,1),
+    Estado VARCHAR(20) NOT NULL CHECK (Estado IN ('Pendiente', 'En Proceso', 'Completado', 'Entregado', 'Cancelado')),
+    Comentarios TEXT,
+    FechaCreacion DATETIME DEFAULT GETDATE(),
+    FechaCompletado DATETIME,
+    PrecioTotal DECIMAL(10,2) NOT NULL,
+    EncordadorID INT,  -- ID del encordador asignado
+    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID),
+    FOREIGN KEY (RaquetaID) REFERENCES Raquetas(RaquetaID),
+    FOREIGN KEY (ServicioID) REFERENCES Servicios(ServicioID),
+    FOREIGN KEY (CuerdaID) REFERENCES Cuerdas(CuerdaID),
+    FOREIGN KEY (EncordadorID) REFERENCES Usuarios(UsuarioID)
 );
 
 -- Tabla de Horarios de Disponibilidad
-CREATE TABLE Availability (
-    AvailabilityID INT IDENTITY(1,1) PRIMARY KEY,
-    StringerID INT NOT NULL,
-    DayOfWeek TINYINT NOT NULL CHECK (DayOfWeek BETWEEN 1 AND 7),
-    StartTime TIME NOT NULL,
-    EndTime TIME NOT NULL,
-    FOREIGN KEY (StringerID) REFERENCES Users(UserID)
+CREATE TABLE Disponibilidad (
+    DisponibilidadID INT IDENTITY(1,1) PRIMARY KEY,
+    EncordadorID INT NOT NULL,
+    DiaSemana TINYINT NOT NULL CHECK (DiaSemana BETWEEN 1 AND 7),
+    HoraInicio TIME NOT NULL,
+    HoraFin TIME NOT NULL,
+    FOREIGN KEY (EncordadorID) REFERENCES Usuarios(UsuarioID)
 );
 
 -- Tabla de Historial de Tensiones
-CREATE TABLE TensionHistory (
-    HistoryID INT IDENTITY(1,1) PRIMARY KEY,
-    RacquetID INT NOT NULL,
-    OrderID INT NOT NULL,
-    MainTension DECIMAL(4,1) NOT NULL,
-    CrossTension DECIMAL(4,1),
-    StringID INT,
-    Date DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (RacquetID) REFERENCES Racquets(RacquetID),
-    FOREIGN KEY (OrderID) REFERENCES StringingOrders(OrderID),
-    FOREIGN KEY (StringID) REFERENCES Strings(StringID)
+CREATE TABLE HistorialTensiones (
+    HistorialID INT IDENTITY(1,1) PRIMARY KEY,
+    RaquetaID INT NOT NULL,
+    OrdenID INT NOT NULL,
+    TensionVertical DECIMAL(4,1) NOT NULL,
+    TensionHorizontal DECIMAL(4,1),
+    CuerdaID INT,
+    Fecha DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (RaquetaID) REFERENCES Raquetas(RaquetaID),
+    FOREIGN KEY (OrdenID) REFERENCES OrdenesEncordado(OrdenID),
+    FOREIGN KEY (CuerdaID) REFERENCES Cuerdas(CuerdaID)
 );
 
 -- Índices para mejorar el rendimiento
-CREATE INDEX IX_StringingOrders_Status ON StringingOrders(Status);
-CREATE INDEX IX_StringingOrders_Created ON StringingOrders(Created);
-CREATE INDEX IX_Racquets_UserID ON Racquets(UserID);
-CREATE INDEX IX_TensionHistory_RacquetID ON TensionHistory(RacquetID);
+CREATE INDEX IX_OrdenesEncordado_Estado ON OrdenesEncordado(Estado);
+CREATE INDEX IX_OrdenesEncordado_FechaCreacion ON OrdenesEncordado(FechaCreacion);
+CREATE INDEX IX_Raquetas_UsuarioID ON Raquetas(UsuarioID);
+CREATE INDEX IX_HistorialTensiones_RaquetaID ON HistorialTensiones(RaquetaID);
 GO
 
--- Trigger para actualizar LastModified en Users
-CREATE TRIGGER trg_Users_UpdateLastModified
-ON Users
+-- Trigger para actualizar UltimaModificacion en Usuarios
+CREATE TRIGGER trg_Usuarios_ActualizarUltimaModificacion
+ON Usuarios
 AFTER UPDATE
 AS
 BEGIN
-    UPDATE Users
-    SET LastModified = GETDATE()
-    FROM Users u
-    INNER JOIN inserted i ON u.UserID = i.UserID
+    UPDATE Usuarios
+    SET UltimaModificacion = GETDATE()
+    FROM Usuarios u
+    INNER JOIN inserted i ON u.UsuarioID = i.UsuarioID
 END;
 GO
