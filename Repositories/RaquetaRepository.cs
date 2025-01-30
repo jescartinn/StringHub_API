@@ -18,7 +18,7 @@ public class RaquetaRepository : IRaquetaRepository
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(
             "SELECT RaquetaId, UsuarioId, Marca, Modelo, NumeroSerie, Descripcion, FechaCreacion " +
-            "FROM Raquetas ORDER BY Marca", connection);
+            "FROM Raquetas ORDER BY RaquetaId", connection);
 
         await connection.OpenAsync();
         using var reader = await command.ExecuteReaderAsync();
