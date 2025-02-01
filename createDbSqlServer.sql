@@ -188,3 +188,77 @@ VALUES
     ('Tecnifibre', 'NRG2', '1.30', 'Multifilamento', 'Natural', 23.99, 25, 1),
     ('Tecnifibre', 'X-One Biphase', '1.30', 'Multifilamento', 'Rojo', 24.99, 20, 1);
 GO
+
+-- Inserts para servicios básicos y premium
+INSERT INTO Servicios (
+    NombreServicio, 
+    Descripcion, 
+    PrecioBase, 
+    TiempoEstimado, 
+    Activo
+) VALUES 
+    -- Servicios Básicos
+    ('Encordado Estándar', 'Servicio de encordado básico con instalación profesional. Incluye ajuste de tensión según preferencias.', 25.00, 60,  -- 60 minutos
+    1),
+    
+    ('Encordado Premium', 'Servicio de encordado premium con atención especial a los detalles, protectores de marco y ajuste preciso de tensión.', 35.00, 90,  -- 90 minutos
+    1),
+    
+    ('Encordado Urgente', 'Servicio de encordado prioritario, realizado en el mismo día (sujeto a disponibilidad).', 45.00, 60,  -- 60 minutos
+    1),
+    
+    ('Encordado Híbrido', 'Instalación de dos tipos diferentes de cuerdas para vertical y horizontal.', 40.00, 90,  -- 90 minutos
+    1),
+    
+    ('Reencordado con Diagnóstico', 'Incluye evaluación del estado de la raqueta, recomendaciones y encordado personalizado.', 50.00, 120,  -- 120 minutos
+    1),
+    
+    ('Encordado + Personalización', 'Servicio completo de encordado con ajuste de peso y balance de la raqueta.', 60.00, 150,  -- 150 minutos
+    1);
+GO
+
+-- Inserts para órdenes de encordado
+INSERT INTO OrdenesEncordado (
+    UsuarioId, RaquetaId, ServicioId, CuerdaId,
+    TensionVertical, TensionHorizontal, Estado,
+    Comentarios, FechaCreacion, PrecioTotal, EncordadorId
+) VALUES 
+    -- Órdenes Pendientes
+    (1, 1, 1, 1, 24.5, 24.5, 'Pendiente', 
+    'Preferencia por tensión uniforme', GETDATE(), 35.99, NULL),
+    
+    (2, 3, 1, 3, 25.0, 24.0, 'Pendiente',
+    'Cliente habitual, cuidado extra', GETDATE(), 39.99, NULL),
+    
+    -- Órdenes En Proceso
+    (1, 2, 2, 4, 26.0, 25.0, 'En Proceso',
+    'Urgente para torneo del fin de semana', 
+    DATEADD(day, -1, GETDATE()), 45.99, 1),
+    
+    (3, 6, 1, 2, 23.5, NULL, 'En Proceso',
+    'Primera vez con estas cuerdas', 
+    DATEADD(day, -1, GETDATE()), 29.99, 2),
+    
+    -- Órdenes Completadas
+    (2, 4, 2, 5, 25.5, 25.5, 'Completado',
+    'Cliente satisfecho con el resultado anterior',
+    DATEADD(day, -3, GETDATE()), 42.99, 1),
+    
+    (3, 7, 1, 6, 24.0, 23.0, 'Completado',
+    'Tensión diferencial solicitada por el cliente',
+    DATEADD(day, -2, GETDATE()), 38.99, 2),
+    
+    -- Órdenes Entregadas
+    (1, 1, 1, 1, 25.0, 25.0, 'Entregado',
+    'Encordado mensual',
+    DATEADD(day, -7, GETDATE()), 35.99, 1),
+    
+    (2, 5, 2, 3, 26.5, 26.5, 'Entregado',
+    'Cliente pidió máxima tensión posible',
+    DATEADD(day, -5, GETDATE()), 44.99, 2),
+    
+    -- Órdenes Canceladas
+    (3, 8, 1, NULL, 24.0, 24.0, 'Cancelado',
+    'Cliente canceló por urgencia',
+    DATEADD(day, -4, GETDATE()), 29.99, NULL);
+GO

@@ -16,10 +16,14 @@ builder.Services.AddScoped<IUsuarioRepository>(provider =>
 builder.Services.AddScoped<ICuerdaRepository>(provider =>
     new CuerdaRepository(connectionString));
 
+builder.Services.AddScoped<IOrdenEncordadoRepository>(provider =>
+    new OrdenEncordadoRepository(connectionString));
+
 // Registrar los servicios
 builder.Services.AddScoped<IRaquetaService, RaquetaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ICuerdaService, CuerdaService>();
+builder.Services.AddScoped<IOrdenEncordadoService, OrdenEncordadoService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
