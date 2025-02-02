@@ -262,3 +262,25 @@ INSERT INTO OrdenesEncordado (
     'Cliente canceló por urgencia',
     DATEADD(day, -4, GETDATE()), 29.99, NULL);
 GO
+
+-- Inserts para tabla HistorialTensiones
+INSERT INTO HistorialTensiones (
+    RaquetaId, OrdenId, TensionVertical, TensionHorizontal, CuerdaId, Fecha
+) VALUES 
+    -- Historial para la raqueta 1 (Babolat Pure Drive)
+    (1, 1, 24.5, 24.5, 1, DATEADD(month, -3, GETDATE())),  -- RPM Blast
+    (1, 2, 25.0, 25.0, 2, DATEADD(month, -2, GETDATE())),  -- VS Touch
+    (1, 7, 25.5, 25.5, 1, DATEADD(month, -1, GETDATE())),  -- RPM Blast
+
+    -- Historial para la raqueta 2 (Head Speed Pro)
+    (2, 3, 26.0, 25.0, 4, DATEADD(month, -2, GETDATE())),  -- Pro Hurricane
+    (2, 4, 26.5, 25.5, 11, DATEADD(month, -1, GETDATE())), -- Head Hawk
+
+    -- Historial para la raqueta 3 (Wilson Blade)
+    (3, 5, 23.5, 23.5, 5, DATEADD(month, -3, GETDATE())),  -- Wilson NXT
+    (3, 6, 24.0, 24.0, 6, DATEADD(month, -1, GETDATE())),  -- Wilson Revolve
+
+    -- Historial para la raqueta 4 (Yonex EZONE)
+    (4, 8, 25.0, 25.0, 14, DATEADD(month, -2, GETDATE())), -- Yonex Poly Tour Pro
+    (4, 9, 25.5, 25.5, 15, DATEADD(month, -1, GETDATE())); -- Yonex Multi-Sensa
+GO

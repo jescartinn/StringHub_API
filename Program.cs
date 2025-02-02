@@ -22,12 +22,16 @@ builder.Services.AddScoped<IOrdenEncordadoRepository>(provider =>
 builder.Services.AddScoped<IServicioRepository>(provider =>
     new ServicioRepository(connectionString));
 
+builder.Services.AddScoped<IHistorialTensionRepository>(provider =>
+    new HistorialTensionRepository(connectionString));
+
 // Registrar los servicios
 builder.Services.AddScoped<IRaquetaService, RaquetaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ICuerdaService, CuerdaService>();
 builder.Services.AddScoped<IOrdenEncordadoService, OrdenEncordadoService>();
 builder.Services.AddScoped<IServicioService, ServicioService>();
+builder.Services.AddScoped<IHistorialTensionService, HistorialTensionService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
