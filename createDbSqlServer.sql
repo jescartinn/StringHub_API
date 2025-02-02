@@ -119,9 +119,18 @@ BEGIN
 END;
 GO
 
--- Inserts tabla Usuarios
+-- Inserts tabla usuarios: Encordadores, Admin y Clientes
 INSERT INTO Usuarios (Email, Contraseña, Nombre, Apellido, Telefono, TipoUsuario)
 VALUES 
+    -- Encordadores (IDs 1-3)
+    ('miguel@stringhub.com', 'password123', 'Miguel', 'Sánchez', '666777888', 'Encordador'),
+    ('laura@stringhub.com', 'password123', 'Laura', 'Ruiz', '666999000', 'Encordador'),
+    ('david@stringhub.com', 'password123', 'David', 'Torres', '666111333', 'Encordador'),
+    
+    -- Admin (ID 4)
+    ('admin@stringhub.com', 'admin123', 'Admin', 'Sistema', '666000111', 'Admin'),
+    
+    -- Clientes (IDs 5-7)
     ('juan@email.com', 'password123', 'Juan', 'Pérez', '666111222', 'Cliente'),
     ('ana@email.com', 'password123', 'Ana', 'García', '666333444', 'Cliente'),
     ('carlos@email.com', 'password123', 'Carlos', 'Martínez', '666555666', 'Cliente');
@@ -130,20 +139,20 @@ GO
 -- Inserts tabla Raquetas
 INSERT INTO Raquetas (UsuarioId, Marca, Modelo, NumeroSerie, Descripcion, FechaCreacion)
 VALUES
-    -- Raquetas de Juan (UsuarioId = 1)
-    (1, 'Babolat', 'Pure Drive', 'BD2023001', 'Raqueta principal para competición', GETDATE()),
-    (1, 'Head', 'Speed Pro', 'HS2023101', 'Raqueta de respaldo', GETDATE()),
+    -- Raquetas de Juan (UsuarioId = 5)
+    (5, 'Babolat', 'Pure Drive', 'BD2023001', 'Raqueta principal para competición', GETDATE()),
+    (5, 'Head', 'Speed Pro', 'HS2023101', 'Raqueta de respaldo', GETDATE()),
     
-    -- Raquetas de Ana (UsuarioId = 2)
-    (2, 'Wilson', 'Blade', 'WB2023201', 'Raqueta para tierra batida', GETDATE()),
-    (2, 'Yonex', 'EZONE', 'YE2023301', 'Nueva raqueta, en período de adaptación', GETDATE()),
-    (2, 'Wilson', 'Pro Staff', 'WP2023401', 'Raqueta antigua', GETDATE()),
+    -- Raquetas de Ana (UsuarioId = 6)
+    (6, 'Wilson', 'Blade', 'WB2023201', 'Raqueta para tierra batida', GETDATE()),
+    (6, 'Yonex', 'EZONE', 'YE2023301', 'Nueva raqueta, en período de adaptación', GETDATE()),
+    (6, 'Wilson', 'Pro Staff', 'WP2023401', 'Raqueta antigua', GETDATE()),
     
-    -- Raquetas de Carlos (UsuarioId = 3)
-    (3, 'Head', 'Prestige', 'HP2023501', 'Raqueta principal', GETDATE()),
-    (3, 'Babolat', 'Pure Aero', 'BA2023601', 'Raqueta para entrenamiento', GETDATE()),
-    (3, 'Dunlop', 'FX500', 'DF2023701', 'Raqueta nueva sin estrenar', GETDATE()),
-    (3, 'Prince', 'Phantom', 'PP2023801', 'Raqueta para pista rápida', GETDATE());
+    -- Raquetas de Carlos (UsuarioId = 7)
+    (7, 'Head', 'Prestige', 'HP2023501', 'Raqueta principal', GETDATE()),
+    (7, 'Babolat', 'Pure Aero', 'BA2023601', 'Raqueta para entrenamiento', GETDATE()),
+    (7, 'Dunlop', 'FX500', 'DF2023701', 'Raqueta nueva sin estrenar', GETDATE()),
+    (7, 'Prince', 'Phantom', 'PP2023801', 'Raqueta para pista rápida', GETDATE());
 GO
 
 -- Inserts para cuerdas Babolat
@@ -224,41 +233,53 @@ INSERT INTO OrdenesEncordado (
     Comentarios, FechaCreacion, PrecioTotal, EncordadorId
 ) VALUES 
     -- Órdenes Pendientes
-    (1, 1, 1, 1, 24.5, 24.5, 'Pendiente', 
+    (5, 1, 1, 1, 24.5, 24.5, 'Pendiente', 
     'Preferencia por tensión uniforme', GETDATE(), 35.99, NULL),
     
-    (2, 3, 1, 3, 25.0, 24.0, 'Pendiente',
+    (6, 3, 1, 3, 25.0, 24.0, 'Pendiente',
     'Cliente habitual, cuidado extra', GETDATE(), 39.99, NULL),
     
     -- Órdenes En Proceso
-    (1, 2, 2, 4, 26.0, 25.0, 'En Proceso',
+    (5, 2, 2, 4, 26.0, 25.0, 'En Proceso',
     'Urgente para torneo del fin de semana', 
     DATEADD(day, -1, GETDATE()), 45.99, 1),
     
-    (3, 6, 1, 2, 23.5, NULL, 'En Proceso',
+    (7, 6, 1, 2, 23.5, NULL, 'En Proceso',
     'Primera vez con estas cuerdas', 
     DATEADD(day, -1, GETDATE()), 29.99, 2),
+
+    (6, 4, 4, 7, 24.0, 23.0, 'En Proceso',
+    'Encordado híbrido solicitado por el cliente', 
+    DATEADD(day, -1, GETDATE()), 44.99, 3),
     
     -- Órdenes Completadas
-    (2, 4, 2, 5, 25.5, 25.5, 'Completado',
+    (6, 4, 2, 5, 25.5, 25.5, 'Completado',
     'Cliente satisfecho con el resultado anterior',
     DATEADD(day, -3, GETDATE()), 42.99, 1),
     
-    (3, 7, 1, 6, 24.0, 23.0, 'Completado',
+    (7, 7, 1, 6, 24.0, 23.0, 'Completado',
     'Tensión diferencial solicitada por el cliente',
     DATEADD(day, -2, GETDATE()), 38.99, 2),
+
+    (5, 1, 3, 8, 25.5, 25.5, 'Completado', 
+    'Encordado urgente solicitado', 
+    DATEADD(day, -3, GETDATE()), 49.99, 3),
     
     -- Órdenes Entregadas
-    (1, 1, 1, 1, 25.0, 25.0, 'Entregado',
+    (5, 1, 1, 1, 25.0, 25.0, 'Entregado',
     'Encordado mensual',
     DATEADD(day, -7, GETDATE()), 35.99, 1),
     
-    (2, 5, 2, 3, 26.5, 26.5, 'Entregado',
+    (6, 5, 2, 3, 26.5, 26.5, 'Entregado',
     'Cliente pidió máxima tensión posible',
     DATEADD(day, -5, GETDATE()), 44.99, 2),
+
+    (7, 9, 2, 9, 26.0, 26.0, 'Entregado',
+    'Cliente regular - encordado premium',
+    DATEADD(day, -5, GETDATE()), 39.99, 3),
     
     -- Órdenes Canceladas
-    (3, 8, 1, NULL, 24.0, 24.0, 'Cancelado',
+    (7, 8, 1, NULL, 24.0, 24.0, 'Cancelado',
     'Cliente canceló por urgencia',
     DATEADD(day, -4, GETDATE()), 29.99, NULL);
 GO
@@ -289,7 +310,7 @@ GO
 INSERT INTO Disponibilidad (
     EncordadorId, DiaSemana, HoraInicio, HoraFin
 ) VALUES 
-    -- Horarios para Encordador 1
+    -- Horarios para Miguel (Encordador ID = 1)
     -- Lunes
     (1, 1, '09:00', '14:00'),
     (1, 1, '16:00', '20:00'),
@@ -305,7 +326,7 @@ INSERT INTO Disponibilidad (
     -- Viernes
     (1, 5, '09:00', '15:00'),
 
-    -- Horarios para Encordador 2
+    -- Horarios para Laura (Encordador ID = 2)
     -- Lunes
     (2, 1, '10:00', '15:00'),
     (2, 1, '17:00', '21:00'),
@@ -320,5 +341,15 @@ INSERT INTO Disponibilidad (
     -- Viernes
     (2, 5, '10:00', '15:00'),
     -- Sábado
-    (2, 6, '10:00', '14:00');
+    (2, 6, '10:00', '14:00'),
+
+    -- Horarios para David (Encordador ID = 3)
+    -- Lunes a Viernes - Turno de tarde
+    (3, 1, '15:00', '21:00'),  -- Lunes
+    (3, 2, '15:00', '21:00'),  -- Martes
+    (3, 3, '15:00', '21:00'),  -- Miércoles
+    (3, 4, '15:00', '21:00'),  -- Jueves
+    (3, 5, '15:00', '21:00'),  -- Viernes
+    -- Sábado - Turno de mañana
+    (3, 6, '09:00', '14:00');  -- Sábado
 GO
