@@ -284,3 +284,41 @@ INSERT INTO HistorialTensiones (
     (4, 8, 25.0, 25.0, 14, DATEADD(month, -2, GETDATE())), -- Yonex Poly Tour Pro
     (4, 9, 25.5, 25.5, 15, DATEADD(month, -1, GETDATE())); -- Yonex Multi-Sensa
 GO
+
+-- Inserts para tabla Disponibilidad
+INSERT INTO Disponibilidad (
+    EncordadorId, DiaSemana, HoraInicio, HoraFin
+) VALUES 
+    -- Horarios para Encordador 1
+    -- Lunes
+    (1, 1, '09:00', '14:00'),
+    (1, 1, '16:00', '20:00'),
+    -- Martes
+    (1, 2, '09:00', '14:00'),
+    (1, 2, '16:00', '20:00'),
+    -- Miércoles
+    (1, 3, '09:00', '14:00'),
+    (1, 3, '16:00', '20:00'),
+    -- Jueves
+    (1, 4, '09:00', '14:00'),
+    (1, 4, '16:00', '20:00'),
+    -- Viernes
+    (1, 5, '09:00', '15:00'),
+
+    -- Horarios para Encordador 2
+    -- Lunes
+    (2, 1, '10:00', '15:00'),
+    (2, 1, '17:00', '21:00'),
+    -- Martes
+    (2, 2, '10:00', '15:00'),
+    (2, 2, '17:00', '21:00'),
+    -- Miércoles
+    (2, 3, '10:00', '15:00'),
+    -- Jueves
+    (2, 4, '10:00', '15:00'),
+    (2, 4, '17:00', '21:00'),
+    -- Viernes
+    (2, 5, '10:00', '15:00'),
+    -- Sábado
+    (2, 6, '10:00', '14:00');
+GO
