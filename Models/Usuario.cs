@@ -1,4 +1,4 @@
-namespace Models;
+namespace StringHub.Models;
 public class Usuario
 {
     public int UsuarioId { get; set; }

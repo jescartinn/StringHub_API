@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Models;
+using StringHub.Models;
 using StringHub.Services;
 
 namespace StringHub.Controllers

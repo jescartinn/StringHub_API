@@ -1,5 +1,5 @@
 using Microsoft.Data.SqlClient;
-using Models;
+using StringHub.Models;
 
 namespace StringHub.Repositories;
 

@@ -1,5 +1,5 @@
 using StringHub.Repositories;
-using Models;
+using StringHub.Models;
 
 namespace StringHub.Services
 {

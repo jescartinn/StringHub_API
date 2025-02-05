@@ -1,4 +1,4 @@
-namespace Models;
+namespace StringHub.Models;
 public class Raqueta
 {
     public int RaquetaId { get; set; }

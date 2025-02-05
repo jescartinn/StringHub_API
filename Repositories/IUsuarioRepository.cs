@@ -1,4 +1,4 @@
-using Models;
+using StringHub.Models;
 namespace StringHub.Repositories;
 
 public interface IUsuarioRepository
