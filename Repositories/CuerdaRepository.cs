@@ -143,7 +143,7 @@ public class CuerdaRepository : ICuerdaRepository
     {
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(
-            "UPDATE Cuerdas SET Stock = Stock + @Cantidad WHERE CuerdaId = @Id", connection);
+            "UPDATE Cuerdas SET Stock = @Cantidad WHERE CuerdaId = @Id", connection);
         
         command.Parameters.AddWithValue("@Id", id);
         command.Parameters.AddWithValue("@Cantidad", cantidad);
