@@ -47,9 +47,9 @@ namespace StringHub.Data
                 entity.Property(e => e.Descripcion).HasColumnType("TEXT");
                 entity.Property(e => e.FechaCreacion).HasDefaultValueSql("GETDATE()");
                 
-                entity.HasOne<Usuario>()
-                    .WithMany()
-                    .HasForeignKey(e => e.UsuarioId)
+                entity.HasOne(r => r.Usuario)
+                    .WithMany(u => u.Raquetas)
+                    .HasForeignKey(r => r.UsuarioId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -92,29 +92,31 @@ namespace StringHub.Data
                 entity.Property(e => e.FechaCreacion).HasDefaultValueSql("GETDATE()");
                 entity.Property(e => e.PrecioTotal).HasColumnType("DECIMAL(10,2)").IsRequired();
 
-                entity.HasOne<Usuario>()
-                    .WithMany()
-                    .HasForeignKey(e => e.UsuarioId)
+                // Configuración específica para la relación OrdenEncordado -> Usuario (Cliente)
+                entity.HasOne(o => o.Usuario)
+                    .WithMany(u => u.OrdenesComoCliente)
+                    .HasForeignKey(o => o.UsuarioId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne<Raqueta>()
-                    .WithMany()
-                    .HasForeignKey(e => e.RaquetaId)
+                // Configuración específica para la relación OrdenEncordado -> Usuario (Encordador)
+                entity.HasOne(o => o.Encordador)
+                    .WithMany(u => u.OrdenesProcesadas)
+                    .HasForeignKey(o => o.EncordadorId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne<Servicio>()
-                    .WithMany()
-                    .HasForeignKey(e => e.ServicioId)
+                entity.HasOne(o => o.Raqueta)
+                    .WithMany(r => r.Ordenes)
+                    .HasForeignKey(o => o.RaquetaId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne<Cuerda>()
-                    .WithMany()
-                    .HasForeignKey(e => e.CuerdaId)
+                entity.HasOne(o => o.Servicio)
+                    .WithMany(s => s.Ordenes)
+                    .HasForeignKey(o => o.ServicioId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne<Usuario>()
-                    .WithMany()
-                    .HasForeignKey(e => e.EncordadorId)
+                entity.HasOne(o => o.Cuerda)
+                    .WithMany(c => c.Ordenes)
+                    .HasForeignKey(o => o.CuerdaId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -127,19 +129,19 @@ namespace StringHub.Data
                 entity.Property(e => e.TensionHorizontal).HasColumnType("DECIMAL(4,1)");
                 entity.Property(e => e.Fecha).HasDefaultValueSql("GETDATE()");
 
-                entity.HasOne<Raqueta>()
-                    .WithMany()
-                    .HasForeignKey(e => e.RaquetaId)
+                entity.HasOne(h => h.Raqueta)
+                    .WithMany(r => r.HistorialTensiones)
+                    .HasForeignKey(h => h.RaquetaId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne<OrdenEncordado>()
-                    .WithMany()
-                    .HasForeignKey(e => e.OrdenId)
+                entity.HasOne(h => h.Orden)
+                    .WithMany(o => o.HistorialTensiones)
+                    .HasForeignKey(h => h.OrdenId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne<Cuerda>()
-                    .WithMany()
-                    .HasForeignKey(e => e.CuerdaId)
+                entity.HasOne(h => h.Cuerda)
+                    .WithMany(c => c.HistorialTensiones)
+                    .HasForeignKey(h => h.CuerdaId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -152,9 +154,9 @@ namespace StringHub.Data
                 entity.Property(e => e.HoraInicio).IsRequired();
                 entity.Property(e => e.HoraFin).IsRequired();
 
-                entity.HasOne<Usuario>()
-                    .WithMany()
-                    .HasForeignKey(e => e.EncordadorId)
+                entity.HasOne(d => d.Encordador)
+                    .WithMany(u => u.Disponibilidades)
+                    .HasForeignKey(d => d.EncordadorId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
