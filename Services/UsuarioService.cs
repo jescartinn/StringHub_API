@@ -1,74 +1,104 @@
-using StringHub.Repositories;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using StringHub.Data;
+using StringHub.DTOs;
 using StringHub.Models;
 
 namespace StringHub.Services
 {
     public class UsuarioService : IUsuarioService
     {
-        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public UsuarioService(IUsuarioRepository usuarioRepository)
+        public UsuarioService(ApplicationDbContext context, IMapper mapper)
         {
-            _usuarioRepository = usuarioRepository;
+            _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Usuario>> GetAllUsuariosAsync()
+        public async Task<IEnumerable<UsuarioDto>> GetAllUsuariosAsync()
         {
-            return await _usuarioRepository.GetAllAsync();
+            var usuarios = await _context.Usuarios.ToListAsync();
+            return _mapper.Map<IEnumerable<UsuarioDto>>(usuarios);
         }
 
-        public async Task<Usuario?> GetUsuarioByIdAsync(int id)
+        public async Task<UsuarioDto?> GetUsuarioByIdAsync(int id)
         {
-            return await _usuarioRepository.GetByIdAsync(id);
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null) return null;
+            
+            return _mapper.Map<UsuarioDto>(usuario);
         }
 
-        public async Task<Usuario?> GetUsuarioByEmailAsync(string email)
+        public async Task<UsuarioDto?> GetUsuarioByEmailAsync(string email)
         {
-            return await _usuarioRepository.GetByEmailAsync(email);
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+                
+            if (usuario == null) return null;
+            
+            return _mapper.Map<UsuarioDto>(usuario);
         }
 
-        public async Task<Usuario> CreateUsuarioAsync(Usuario usuario)
+        public async Task<UsuarioDto> CreateUsuarioAsync(UsuarioCreateDto usuarioDto)
         {
-            if (await _usuarioRepository.EmailExistsAsync(usuario.Email))
+            if (await _context.Usuarios.AnyAsync(u => u.Email.ToLower() == usuarioDto.Email.ToLower()))
             {
-                throw new InvalidOperationException($"Ya existe un usuario con el email {usuario.Email}");
+                throw new InvalidOperationException($"Ya existe un usuario con el email {usuarioDto.Email}");
             }
 
+            var usuario = _mapper.Map<Usuario>(usuarioDto);
             usuario.FechaCreacion = DateTime.UtcNow;
             usuario.UltimaModificacion = DateTime.UtcNow;
-            return await _usuarioRepository.CreateAsync(usuario);
+            
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
+            
+            return _mapper.Map<UsuarioDto>(usuario);
         }
 
-        public async Task UpdateUsuarioAsync(int id, Usuario usuario)
+        public async Task UpdateUsuarioAsync(int id, UsuarioUpdateDto usuarioDto)
         {
-            if (id != usuario.UsuarioId)
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
             {
-                throw new ArgumentException("El ID del usuario no coincide con el ID proporcionado");
+                throw new KeyNotFoundException($"No se encontró el usuario con ID {id}");
             }
 
-            var existingUsuario = await _usuarioRepository.GetByEmailAsync(usuario.Email);
-            if (existingUsuario != null && existingUsuario.UsuarioId != id)
+            if (!string.IsNullOrEmpty(usuarioDto.Email) && 
+                usuario.Email.ToLower() != usuarioDto.Email.ToLower() &&
+                await _context.Usuarios.AnyAsync(u => u.Email.ToLower() == usuarioDto.Email.ToLower()))
             {
-                throw new InvalidOperationException($"Ya existe un usuario con el email {usuario.Email}");
+                throw new InvalidOperationException($"Ya existe un usuario con el email {usuarioDto.Email}");
             }
 
+            _mapper.Map(usuarioDto, usuario);
             usuario.UltimaModificacion = DateTime.UtcNow;
-            await _usuarioRepository.UpdateAsync(usuario);
+            
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteUsuarioAsync(int id)
         {
-            await _usuarioRepository.DeleteAsync(id);
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+            {
+                throw new KeyNotFoundException($"No se encontró el usuario con ID {id}");
+            }
+
+            _context.Usuarios.Remove(usuario);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ValidateUsuarioExistsAsync(int id)
         {
-            return await _usuarioRepository.ExistsAsync(id);
+            return await _context.Usuarios.AnyAsync(u => u.UsuarioId == id);
         }
 
         public async Task<bool> ValidateEmailExistsAsync(string email)
         {
-            return await _usuarioRepository.EmailExistsAsync(email);
+            return await _context.Usuarios.AnyAsync(u => u.Email.ToLower() == email.ToLower());
         }
     }
 }

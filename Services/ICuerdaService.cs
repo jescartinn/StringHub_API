@@ -1,15 +1,17 @@
-using StringHub.Models;
-namespace StringHub.Services;
+using StringHub.DTOs;
 
-public interface ICuerdaService
+namespace StringHub.Services
 {
-    Task<IEnumerable<Cuerda>> GetAllCuerdasAsync();
-    Task<IEnumerable<Cuerda>> GetCuerdasActivasAsync();
-    Task<Cuerda?> GetCuerdaByIdAsync(int id);
-    Task<IEnumerable<Cuerda>> GetCuerdasByMarcaAsync(string marca);
-    Task<Cuerda> CreateCuerdaAsync(Cuerda cuerda);
-    Task UpdateCuerdaAsync(int id, Cuerda cuerda);
-    Task DeleteCuerdaAsync(int id);
-    Task UpdateStockCuerdaAsync(int id, int cantidad);
-    Task<bool> ValidateCuerdaExistsAsync(int id);
+    public interface ICuerdaService
+    {
+        Task<IEnumerable<CuerdaDto>> GetAllCuerdasAsync();
+        Task<IEnumerable<CuerdaDto>> GetCuerdasActivasAsync();
+        Task<CuerdaDto?> GetCuerdaByIdAsync(int id);
+        Task<IEnumerable<CuerdaDto>> GetCuerdasByMarcaAsync(string marca);
+        Task<CuerdaDto> CreateCuerdaAsync(CuerdaCreateDto cuerda);
+        Task UpdateCuerdaAsync(int id, CuerdaUpdateDto cuerda);
+        Task DeleteCuerdaAsync(int id);
+        Task UpdateStockCuerdaAsync(int id, int cantidad);
+        Task<bool> ValidateCuerdaExistsAsync(int id);
+    }
 }

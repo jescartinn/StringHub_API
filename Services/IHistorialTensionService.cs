@@ -1,14 +1,16 @@
-using StringHub.Models;
-namespace StringHub.Services;
+using StringHub.DTOs;
 
-public interface IHistorialTensionService
+namespace StringHub.Services
 {
-    Task<IEnumerable<HistorialTension>> GetAllHistorialAsync();
-    Task<HistorialTension?> GetHistorialByIdAsync(int id);
-    Task<IEnumerable<HistorialTension>> GetHistorialByRaquetaAsync(int raquetaId);
-    Task<IEnumerable<HistorialTension>> GetHistorialByOrdenAsync(int ordenId);
-    Task<HistorialTension> CreateHistorialAsync(HistorialTension historial);
-    Task UpdateHistorialAsync(int id, HistorialTension historial);
-    Task DeleteHistorialAsync(int id);
-    Task<bool> ValidateHistorialExistsAsync(int id);
+    public interface IHistorialTensionService
+    {
+        Task<IEnumerable<HistorialTensionDto>> GetAllHistorialAsync();
+        Task<HistorialTensionDto?> GetHistorialByIdAsync(int id);
+        Task<IEnumerable<HistorialTensionDto>> GetHistorialByRaquetaAsync(int raquetaId);
+        Task<IEnumerable<HistorialTensionDto>> GetHistorialByOrdenAsync(int ordenId);
+        Task<HistorialTensionDto> CreateHistorialAsync(HistorialTensionCreateDto historial);
+        Task UpdateHistorialAsync(int id, HistorialTensionCreateDto historial);
+        Task DeleteHistorialAsync(int id);
+        Task<bool> ValidateHistorialExistsAsync(int id);
+    }
 }

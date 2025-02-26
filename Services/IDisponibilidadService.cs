@@ -1,14 +1,16 @@
-using StringHub.Models;
-namespace StringHub.Services;
+using StringHub.DTOs;
 
-public interface IDisponibilidadService
+namespace StringHub.Services
 {
-    Task<IEnumerable<Disponibilidad>> GetAllDisponibilidadesAsync();
-    Task<Disponibilidad?> GetDisponibilidadByIdAsync(int id);
-    Task<IEnumerable<Disponibilidad>> GetDisponibilidadesByEncordadorAsync(int encordadorId);
-    Task<IEnumerable<Disponibilidad>> GetDisponibilidadesByDiaSemanaAsync(byte diaSemana);
-    Task<Disponibilidad> CreateDisponibilidadAsync(Disponibilidad disponibilidad);
-    Task UpdateDisponibilidadAsync(int id, Disponibilidad disponibilidad);
-    Task DeleteDisponibilidadAsync(int id);
-    Task<bool> ValidateDisponibilidadExistsAsync(int id);
+    public interface IDisponibilidadService
+    {
+        Task<IEnumerable<DisponibilidadDto>> GetAllDisponibilidadesAsync();
+        Task<DisponibilidadDto?> GetDisponibilidadByIdAsync(int id);
+        Task<IEnumerable<DisponibilidadDto>> GetDisponibilidadesByEncordadorAsync(int encordadorId);
+        Task<IEnumerable<DisponibilidadDto>> GetDisponibilidadesByDiaSemanaAsync(byte diaSemana);
+        Task<DisponibilidadDto> CreateDisponibilidadAsync(DisponibilidadCreateDto disponibilidad);
+        Task UpdateDisponibilidadAsync(int id, DisponibilidadUpdateDto disponibilidad);
+        Task DeleteDisponibilidadAsync(int id);
+        Task<bool> ValidateDisponibilidadExistsAsync(int id);
+    }
 }

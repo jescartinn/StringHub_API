@@ -1,66 +1,100 @@
-using StringHub.Repositories;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using StringHub.Data;
+using StringHub.DTOs;
 using StringHub.Models;
 
 namespace StringHub.Services
 {
     public class ServicioService : IServicioService
     {
-        private readonly IServicioRepository _servicioRepository;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ServicioService(IServicioRepository servicioRepository)
+        public ServicioService(ApplicationDbContext context, IMapper mapper)
         {
-            _servicioRepository = servicioRepository;
+            _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Servicio>> GetAllServiciosAsync()
+        public async Task<IEnumerable<ServicioDto>> GetAllServiciosAsync()
         {
-            return await _servicioRepository.GetAllAsync();
+            var servicios = await _context.Servicios
+                .OrderBy(s => s.ServicioId)
+                .ToListAsync();
+                
+            return _mapper.Map<IEnumerable<ServicioDto>>(servicios);
         }
 
-        public async Task<IEnumerable<Servicio>> GetServiciosActivosAsync()
+        public async Task<IEnumerable<ServicioDto>> GetServiciosActivosAsync()
         {
-            return await _servicioRepository.GetActivosAsync();
+            var servicios = await _context.Servicios
+                .Where(s => s.Activo)
+                .OrderBy(s => s.ServicioId)
+                .ToListAsync();
+                
+            return _mapper.Map<IEnumerable<ServicioDto>>(servicios);
         }
 
-        public async Task<Servicio?> GetServicioByIdAsync(int id)
+        public async Task<ServicioDto?> GetServicioByIdAsync(int id)
         {
-            return await _servicioRepository.GetByIdAsync(id);
+            var servicio = await _context.Servicios.FindAsync(id);
+            if (servicio == null) return null;
+            
+            return _mapper.Map<ServicioDto>(servicio);
         }
 
-        public async Task<Servicio> CreateServicioAsync(Servicio servicio)
+        public async Task<ServicioDto> CreateServicioAsync(ServicioCreateDto servicioDto)
         {
-            ValidateServicio(servicio);
-            return await _servicioRepository.CreateAsync(servicio);
+            ValidateServicio(servicioDto);
+
+            var servicio = _mapper.Map<Servicio>(servicioDto);
+            servicio.Activo = true;
+            
+            _context.Servicios.Add(servicio);
+            await _context.SaveChangesAsync();
+            
+            return _mapper.Map<ServicioDto>(servicio);
         }
 
-        public async Task UpdateServicioAsync(int id, Servicio servicio)
+        public async Task UpdateServicioAsync(int id, ServicioUpdateDto servicioDto)
         {
-            if (id != servicio.ServicioId)
-            {
-                throw new ArgumentException("El ID del servicio no coincide con el ID proporcionado");
-            }
-
-            ValidateServicio(servicio);
-            await _servicioRepository.UpdateAsync(servicio);
-        }
-
-        public async Task DeleteServicioAsync(int id)
-        {
-            var servicio = await _servicioRepository.GetByIdAsync(id);
+            var servicio = await _context.Servicios.FindAsync(id);
             if (servicio == null)
             {
                 throw new KeyNotFoundException($"No se encontró el servicio con ID {id}");
             }
 
-            await _servicioRepository.DeleteAsync(id);
+            // Validar valores antes de mapear
+            if (servicioDto.PrecioBase.HasValue && servicioDto.PrecioBase <= 0)
+                throw new InvalidOperationException("El precio base debe ser mayor que 0");
+
+            if (servicioDto.TiempoEstimado.HasValue && servicioDto.TiempoEstimado <= 0)
+                throw new InvalidOperationException("El tiempo estimado debe ser mayor que 0");
+
+            _mapper.Map(servicioDto, servicio);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteServicioAsync(int id)
+        {
+            var servicio = await _context.Servicios.FindAsync(id);
+            if (servicio == null)
+            {
+                throw new KeyNotFoundException($"No se encontró el servicio con ID {id}");
+            }
+
+            // En lugar de eliminar físicamente, marcamos como inactivo
+            servicio.Activo = false;
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ValidateServicioExistsAsync(int id)
         {
-            return await _servicioRepository.ExistsAsync(id);
+            return await _context.Servicios.AnyAsync(s => s.ServicioId == id);
         }
 
-        private void ValidateServicio(Servicio servicio)
+        private void ValidateServicio(ServicioCreateDto servicio)
         {
             var errors = new List<string>();
 

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StringHub.Models;
+using StringHub.DTOs;
 using StringHub.Services;
 
 namespace StringHub.Controllers
@@ -16,14 +16,14 @@ namespace StringHub.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrdenEncordado>>> GetOrdenes()
+        public async Task<ActionResult<IEnumerable<OrdenEncordadoDto>>> GetOrdenes()
         {
             var ordenes = await _ordenService.GetAllOrdenesAsync();
             return Ok(ordenes);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<OrdenEncordado>> GetOrden(int id)
+        public async Task<ActionResult<OrdenEncordadoDto>> GetOrden(int id)
         {
             var orden = await _ordenService.GetOrdenByIdAsync(id);
 
@@ -36,21 +36,21 @@ namespace StringHub.Controllers
         }
 
         [HttpGet("usuario/{usuarioId}")]
-        public async Task<ActionResult<IEnumerable<OrdenEncordado>>> GetOrdenesByUsuario(int usuarioId)
+        public async Task<ActionResult<IEnumerable<OrdenEncordadoDto>>> GetOrdenesByUsuario(int usuarioId)
         {
             var ordenes = await _ordenService.GetOrdenesByUsuarioAsync(usuarioId);
             return Ok(ordenes);
         }
 
         [HttpGet("encordador/{encordadorId}")]
-        public async Task<ActionResult<IEnumerable<OrdenEncordado>>> GetOrdenesByEncordador(int encordadorId)
+        public async Task<ActionResult<IEnumerable<OrdenEncordadoDto>>> GetOrdenesByEncordador(int encordadorId)
         {
             var ordenes = await _ordenService.GetOrdenesByEncordadorAsync(encordadorId);
             return Ok(ordenes);
         }
 
         [HttpGet("estado/{estado}")]
-        public async Task<ActionResult<IEnumerable<OrdenEncordado>>> GetOrdenesByEstado(string estado)
+        public async Task<ActionResult<IEnumerable<OrdenEncordadoDto>>> GetOrdenesByEstado(string estado)
         {
             try
             {
@@ -64,11 +64,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<OrdenEncordado>> CreateOrden(OrdenEncordado orden)
+        public async Task<ActionResult<OrdenEncordadoDto>> CreateOrden(OrdenEncordadoCreateDto ordenDto)
         {
             try
             {
-                var newOrden = await _ordenService.CreateOrdenAsync(orden);
+                var newOrden = await _ordenService.CreateOrdenAsync(ordenDto);
                 return CreatedAtAction(nameof(GetOrden), new { id = newOrden.OrdenId }, newOrden);
             }
             catch (InvalidOperationException ex)
@@ -78,16 +78,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrden(int id, OrdenEncordado orden)
+        public async Task<IActionResult> UpdateOrden(int id, OrdenEncordadoUpdateDto ordenDto)
         {
-            if (id != orden.OrdenId)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                await _ordenService.UpdateOrdenAsync(id, orden);
+                await _ordenService.UpdateOrdenAsync(id, ordenDto);
                 return NoContent();
             }
             catch (KeyNotFoundException)
@@ -118,12 +113,12 @@ namespace StringHub.Controllers
             }
         }
 
-        [HttpPut("{id}/estado/{estado}")]
-        public async Task<IActionResult> UpdateEstado(int id, string estado)
+        [HttpPut("{id}/estado")]
+        public async Task<IActionResult> UpdateEstado(int id, OrdenEncordadoEstadoUpdateDto estadoDto)
         {
             try
             {
-                await _ordenService.UpdateEstadoOrdenAsync(id, estado);
+                await _ordenService.UpdateEstadoOrdenAsync(id, estadoDto.Estado, estadoDto.EncordadorId);
                 return NoContent();
             }
             catch (KeyNotFoundException)

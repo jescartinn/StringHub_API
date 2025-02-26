@@ -1,71 +1,107 @@
-using StringHub.Repositories;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using StringHub.Data;
+using StringHub.DTOs;
 using StringHub.Models;
 
 namespace StringHub.Services
 {
     public class HistorialTensionService : IHistorialTensionService
     {
-        private readonly IHistorialTensionRepository _historialRepository;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public HistorialTensionService(IHistorialTensionRepository historialRepository)
+        public HistorialTensionService(ApplicationDbContext context, IMapper mapper)
         {
-            _historialRepository = historialRepository;
+            _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<HistorialTension>> GetAllHistorialAsync()
+        public async Task<IEnumerable<HistorialTensionDto>> GetAllHistorialAsync()
         {
-            return await _historialRepository.GetAllAsync();
+            var historiales = await _context.HistorialTensiones
+                .OrderByDescending(h => h.Fecha)
+                .ToListAsync();
+                
+            return _mapper.Map<IEnumerable<HistorialTensionDto>>(historiales);
         }
 
-        public async Task<HistorialTension?> GetHistorialByIdAsync(int id)
+        public async Task<HistorialTensionDto?> GetHistorialByIdAsync(int id)
         {
-            return await _historialRepository.GetByIdAsync(id);
+            var historial = await _context.HistorialTensiones.FindAsync(id);
+            if (historial == null) return null;
+            
+            return _mapper.Map<HistorialTensionDto>(historial);
         }
 
-        public async Task<IEnumerable<HistorialTension>> GetHistorialByRaquetaAsync(int raquetaId)
+        public async Task<IEnumerable<HistorialTensionDto>> GetHistorialByRaquetaAsync(int raquetaId)
         {
-            return await _historialRepository.GetByRaquetaIdAsync(raquetaId);
+            var historiales = await _context.HistorialTensiones
+                .Where(h => h.RaquetaId == raquetaId)
+                .OrderByDescending(h => h.Fecha)
+                .ToListAsync();
+                
+            return _mapper.Map<IEnumerable<HistorialTensionDto>>(historiales);
         }
 
-        public async Task<IEnumerable<HistorialTension>> GetHistorialByOrdenAsync(int ordenId)
+        public async Task<IEnumerable<HistorialTensionDto>> GetHistorialByOrdenAsync(int ordenId)
         {
-            return await _historialRepository.GetByOrdenIdAsync(ordenId);
+            var historiales = await _context.HistorialTensiones
+                .Where(h => h.OrdenId == ordenId)
+                .OrderByDescending(h => h.Fecha)
+                .ToListAsync();
+                
+            return _mapper.Map<IEnumerable<HistorialTensionDto>>(historiales);
         }
 
-        public async Task<HistorialTension> CreateHistorialAsync(HistorialTension historial)
+        public async Task<HistorialTensionDto> CreateHistorialAsync(HistorialTensionCreateDto historialDto)
         {
-            ValidateHistorial(historial);
-            return await _historialRepository.CreateAsync(historial);
+            ValidateHistorial(historialDto);
+
+            var historial = _mapper.Map<HistorialTension>(historialDto);
+            historial.Fecha = DateTime.UtcNow;
+            
+            _context.HistorialTensiones.Add(historial);
+            await _context.SaveChangesAsync();
+            
+            return _mapper.Map<HistorialTensionDto>(historial);
         }
 
-        public async Task UpdateHistorialAsync(int id, HistorialTension historial)
+        public async Task UpdateHistorialAsync(int id, HistorialTensionCreateDto historialDto)
         {
-            if (id != historial.HistorialId)
-            {
-                throw new ArgumentException("El ID del historial no coincide con el ID proporcionado");
-            }
-
-            ValidateHistorial(historial);
-            await _historialRepository.UpdateAsync(historial);
-        }
-
-        public async Task DeleteHistorialAsync(int id)
-        {
-            var historial = await _historialRepository.GetByIdAsync(id);
+            var historial = await _context.HistorialTensiones.FindAsync(id);
             if (historial == null)
             {
                 throw new KeyNotFoundException($"No se encontró el historial con ID {id}");
             }
 
-            await _historialRepository.DeleteAsync(id);
+            ValidateHistorial(historialDto);
+            
+            _mapper.Map(historialDto, historial);
+            // Mantener la fecha original
+            // historial.Fecha permanece sin cambios
+            
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteHistorialAsync(int id)
+        {
+            var historial = await _context.HistorialTensiones.FindAsync(id);
+            if (historial == null)
+            {
+                throw new KeyNotFoundException($"No se encontró el historial con ID {id}");
+            }
+
+            _context.HistorialTensiones.Remove(historial);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ValidateHistorialExistsAsync(int id)
         {
-            return await _historialRepository.ExistsAsync(id);
+            return await _context.HistorialTensiones.AnyAsync(h => h.HistorialId == id);
         }
 
-        private void ValidateHistorial(HistorialTension historial)
+        private void ValidateHistorial(HistorialTensionCreateDto historial)
         {
             var errors = new List<string>();
 

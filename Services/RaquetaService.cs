@@ -1,50 +1,84 @@
-using StringHub.Repositories;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using StringHub.Data;
+using StringHub.DTOs;
 using StringHub.Models;
 
 namespace StringHub.Services
 {
     public class RaquetaService : IRaquetaService
     {
-        private readonly IRaquetaRepository _raquetaRepository;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public RaquetaService(IRaquetaRepository raquetaRepository)
+        public RaquetaService(ApplicationDbContext context, IMapper mapper)
         {
-            _raquetaRepository = raquetaRepository;
+            _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Raqueta>> GetAllRaquetasAsync()
+        public async Task<IEnumerable<RaquetaDto>> GetAllRaquetasAsync()
         {
-            return await _raquetaRepository.GetAllAsync();
+            var raquetas = await _context.Raquetas.ToListAsync();
+            return _mapper.Map<IEnumerable<RaquetaDto>>(raquetas);
         }
 
-        public async Task<Raqueta?> GetRaquetaByIdAsync(int id)
+        public async Task<RaquetaDto?> GetRaquetaByIdAsync(int id)
         {
-            return await _raquetaRepository.GetByIdAsync(id);
+            var raqueta = await _context.Raquetas.FindAsync(id);
+            if (raqueta == null) return null;
+            
+            return _mapper.Map<RaquetaDto>(raqueta);
         }
 
-        public async Task<IEnumerable<Raqueta>> GetRaquetasByUserIdAsync(int userId)
+        public async Task<IEnumerable<RaquetaDto>> GetRaquetasByUserIdAsync(int userId)
         {
-            return await _raquetaRepository.GetByUserIdAsync(userId);
+            var raquetas = await _context.Raquetas
+                .Where(r => r.UsuarioId == userId)
+                .OrderByDescending(r => r.FechaCreacion)
+                .ToListAsync();
+                
+            return _mapper.Map<IEnumerable<RaquetaDto>>(raquetas);
         }
 
-        public async Task<Raqueta> CreateRaquetaAsync(Raqueta raqueta)
+        public async Task<RaquetaDto> CreateRaquetaAsync(RaquetaCreateDto raquetaDto)
         {
-            return await _raquetaRepository.CreateAsync(raqueta);
+            var raqueta = _mapper.Map<Raqueta>(raquetaDto);
+            raqueta.FechaCreacion = DateTime.UtcNow;
+            
+            _context.Raquetas.Add(raqueta);
+            await _context.SaveChangesAsync();
+            
+            return _mapper.Map<RaquetaDto>(raqueta);
         }
 
-        public async Task UpdateRaquetaAsync(int id, Raqueta raqueta)
+        public async Task UpdateRaquetaAsync(int id, RaquetaUpdateDto raquetaDto)
         {
-            await _raquetaRepository.UpdateAsync(raqueta);
+            var raqueta = await _context.Raquetas.FindAsync(id);
+            if (raqueta == null)
+            {
+                throw new KeyNotFoundException($"No se encontró la raqueta con ID {id}");
+            }
+
+            _mapper.Map(raquetaDto, raqueta);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteRaquetaAsync(int id)
         {
-            await _raquetaRepository.DeleteAsync(id);
+            var raqueta = await _context.Raquetas.FindAsync(id);
+            if (raqueta == null)
+            {
+                throw new KeyNotFoundException($"No se encontró la raqueta con ID {id}");
+            }
+
+            _context.Raquetas.Remove(raqueta);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ValidateRaquetaExistsAsync(int id)
         {
-            return await _raquetaRepository.ExistsAsync(id);
+            return await _context.Raquetas.AnyAsync(r => r.RaquetaId == id);
         }
     }
 }

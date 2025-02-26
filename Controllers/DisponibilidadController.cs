@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StringHub.Models;
+using StringHub.DTOs;
 using StringHub.Services;
 
 namespace StringHub.Controllers
@@ -16,14 +16,14 @@ namespace StringHub.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Disponibilidad>>> GetDisponibilidades()
+        public async Task<ActionResult<IEnumerable<DisponibilidadDto>>> GetDisponibilidades()
         {
             var disponibilidades = await _disponibilidadService.GetAllDisponibilidadesAsync();
             return Ok(disponibilidades);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Disponibilidad>> GetDisponibilidad(int id)
+        public async Task<ActionResult<DisponibilidadDto>> GetDisponibilidad(int id)
         {
             var disponibilidad = await _disponibilidadService.GetDisponibilidadByIdAsync(id);
 
@@ -36,14 +36,14 @@ namespace StringHub.Controllers
         }
 
         [HttpGet("encordador/{encordadorId}")]
-        public async Task<ActionResult<IEnumerable<Disponibilidad>>> GetDisponibilidadesByEncordador(int encordadorId)
+        public async Task<ActionResult<IEnumerable<DisponibilidadDto>>> GetDisponibilidadesByEncordador(int encordadorId)
         {
             var disponibilidades = await _disponibilidadService.GetDisponibilidadesByEncordadorAsync(encordadorId);
             return Ok(disponibilidades);
         }
 
         [HttpGet("dia/{diaSemana}")]
-        public async Task<ActionResult<IEnumerable<Disponibilidad>>> GetDisponibilidadesByDiaSemana(byte diaSemana)
+        public async Task<ActionResult<IEnumerable<DisponibilidadDto>>> GetDisponibilidadesByDiaSemana(byte diaSemana)
         {
             try
             {
@@ -57,11 +57,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Disponibilidad>> CreateDisponibilidad(Disponibilidad disponibilidad)
+        public async Task<ActionResult<DisponibilidadDto>> CreateDisponibilidad(DisponibilidadCreateDto disponibilidadDto)
         {
             try
             {
-                var newDisponibilidad = await _disponibilidadService.CreateDisponibilidadAsync(disponibilidad);
+                var newDisponibilidad = await _disponibilidadService.CreateDisponibilidadAsync(disponibilidadDto);
                 return CreatedAtAction(nameof(GetDisponibilidad), new { id = newDisponibilidad.DisponibilidadId }, newDisponibilidad);
             }
             catch (InvalidOperationException ex)
@@ -71,16 +71,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDisponibilidad(int id, Disponibilidad disponibilidad)
+        public async Task<IActionResult> UpdateDisponibilidad(int id, DisponibilidadUpdateDto disponibilidadDto)
         {
-            if (id != disponibilidad.DisponibilidadId)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                await _disponibilidadService.UpdateDisponibilidadAsync(id, disponibilidad);
+                await _disponibilidadService.UpdateDisponibilidadAsync(id, disponibilidadDto);
                 return NoContent();
             }
             catch (KeyNotFoundException)

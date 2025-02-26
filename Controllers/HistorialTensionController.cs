@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StringHub.Models;
+using StringHub.DTOs;
 using StringHub.Services;
 
 namespace StringHub.Controllers
@@ -16,14 +16,14 @@ namespace StringHub.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HistorialTension>>> GetHistoriales()
+        public async Task<ActionResult<IEnumerable<HistorialTensionDto>>> GetHistoriales()
         {
             var historiales = await _historialService.GetAllHistorialAsync();
             return Ok(historiales);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<HistorialTension>> GetHistorial(int id)
+        public async Task<ActionResult<HistorialTensionDto>> GetHistorial(int id)
         {
             var historial = await _historialService.GetHistorialByIdAsync(id);
 
@@ -36,25 +36,25 @@ namespace StringHub.Controllers
         }
 
         [HttpGet("raqueta/{raquetaId}")]
-        public async Task<ActionResult<IEnumerable<HistorialTension>>> GetHistorialByRaqueta(int raquetaId)
+        public async Task<ActionResult<IEnumerable<HistorialTensionDto>>> GetHistorialByRaqueta(int raquetaId)
         {
             var historiales = await _historialService.GetHistorialByRaquetaAsync(raquetaId);
             return Ok(historiales);
         }
 
         [HttpGet("orden/{ordenId}")]
-        public async Task<ActionResult<IEnumerable<HistorialTension>>> GetHistorialByOrden(int ordenId)
+        public async Task<ActionResult<IEnumerable<HistorialTensionDto>>> GetHistorialByOrden(int ordenId)
         {
             var historiales = await _historialService.GetHistorialByOrdenAsync(ordenId);
             return Ok(historiales);
         }
 
         [HttpPost]
-        public async Task<ActionResult<HistorialTension>> CreateHistorial(HistorialTension historial)
+        public async Task<ActionResult<HistorialTensionDto>> CreateHistorial(HistorialTensionCreateDto historialDto)
         {
             try
             {
-                var newHistorial = await _historialService.CreateHistorialAsync(historial);
+                var newHistorial = await _historialService.CreateHistorialAsync(historialDto);
                 return CreatedAtAction(nameof(GetHistorial), new { id = newHistorial.HistorialId }, newHistorial);
             }
             catch (InvalidOperationException ex)
@@ -64,16 +64,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateHistorial(int id, HistorialTension historial)
+        public async Task<IActionResult> UpdateHistorial(int id, HistorialTensionCreateDto historialDto)
         {
-            if (id != historial.HistorialId)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                await _historialService.UpdateHistorialAsync(id, historial);
+                await _historialService.UpdateHistorialAsync(id, historialDto);
                 return NoContent();
             }
             catch (KeyNotFoundException)

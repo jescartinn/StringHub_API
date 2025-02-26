@@ -1,5 +1,8 @@
-using StringHub.Repositories;
+using Microsoft.EntityFrameworkCore;
+using StringHub.Data;
+using StringHub.Mappings;
 using StringHub.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,32 +16,23 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Obtener la cadena de conexión desde el archivo de configuración
+// Configurar DbContext con SQL Server
 var connectionString = builder.Configuration.GetConnectionString("StringHubDB");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
-// Registrar los repositorios con la cadena de conexión
-builder.Services.AddScoped<IRaquetaRepository>(provider =>
-    new RaquetaRepository(connectionString));  
+// Agregar AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-builder.Services.AddScoped<IUsuarioRepository>(provider =>
-    new UsuarioRepository(connectionString));  
+// Configurar controladores con opciones de JSON
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Manejar referencias circulares en JSON
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
-builder.Services.AddScoped<ICuerdaRepository>(provider =>
-    new CuerdaRepository(connectionString));
-
-builder.Services.AddScoped<IOrdenEncordadoRepository>(provider =>
-    new OrdenEncordadoRepository(connectionString));
-
-builder.Services.AddScoped<IServicioRepository>(provider =>
-    new ServicioRepository(connectionString));
-
-builder.Services.AddScoped<IHistorialTensionRepository>(provider =>
-    new HistorialTensionRepository(connectionString));
-
-builder.Services.AddScoped<IDisponibilidadRepository>(provider =>
-    new DisponibilidadRepository(connectionString));
-
-// Registrar los servicios
+// Registrar servicios
 builder.Services.AddScoped<IRaquetaService, RaquetaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ICuerdaService, CuerdaService>();
@@ -47,7 +41,8 @@ builder.Services.AddScoped<IServicioService, ServicioService>();
 builder.Services.AddScoped<IHistorialTensionService, HistorialTensionService>();
 builder.Services.AddScoped<IDisponibilidadService, DisponibilidadService>();
 
-builder.Services.AddControllers();
+// Ya no necesitamos registrar los repositorios pues usaremos EF directamente
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StringHub.Models;
+using StringHub.DTOs;
 using StringHub.Services;
 
 namespace StringHub.Controllers
@@ -16,21 +16,21 @@ namespace StringHub.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Servicio>>> GetServicios()
+        public async Task<ActionResult<IEnumerable<ServicioDto>>> GetServicios()
         {
             var servicios = await _servicioService.GetAllServiciosAsync();
             return Ok(servicios);
         }
 
         [HttpGet("activos")]
-        public async Task<ActionResult<IEnumerable<Servicio>>> GetServiciosActivos()
+        public async Task<ActionResult<IEnumerable<ServicioDto>>> GetServiciosActivos()
         {
             var servicios = await _servicioService.GetServiciosActivosAsync();
             return Ok(servicios);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Servicio>> GetServicio(int id)
+        public async Task<ActionResult<ServicioDto>> GetServicio(int id)
         {
             var servicio = await _servicioService.GetServicioByIdAsync(id);
 
@@ -43,11 +43,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Servicio>> CreateServicio(Servicio servicio)
+        public async Task<ActionResult<ServicioDto>> CreateServicio(ServicioCreateDto servicioDto)
         {
             try
             {
-                var newServicio = await _servicioService.CreateServicioAsync(servicio);
+                var newServicio = await _servicioService.CreateServicioAsync(servicioDto);
                 return CreatedAtAction(nameof(GetServicio), new { id = newServicio.ServicioId }, newServicio);
             }
             catch (InvalidOperationException ex)
@@ -57,16 +57,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateServicio(int id, Servicio servicio)
+        public async Task<IActionResult> UpdateServicio(int id, ServicioUpdateDto servicioDto)
         {
-            if (id != servicio.ServicioId)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                await _servicioService.UpdateServicioAsync(id, servicio);
+                await _servicioService.UpdateServicioAsync(id, servicioDto);
                 return NoContent();
             }
             catch (KeyNotFoundException)

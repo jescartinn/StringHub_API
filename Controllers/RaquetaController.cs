@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StringHub.Models;
+using StringHub.DTOs;
 using StringHub.Services;
 
 namespace StringHub.Controllers
@@ -16,14 +16,14 @@ namespace StringHub.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Raqueta>>> GetRaquetas()
+        public async Task<ActionResult<IEnumerable<RaquetaDto>>> GetRaquetas()
         {
             var raquetas = await _raquetaService.GetAllRaquetasAsync();
             return Ok(raquetas);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Raqueta>> GetRaqueta(int id)
+        public async Task<ActionResult<RaquetaDto>> GetRaqueta(int id)
         {
             var raqueta = await _raquetaService.GetRaquetaByIdAsync(id);
 
@@ -36,48 +36,60 @@ namespace StringHub.Controllers
         }
 
         [HttpGet("usuario/{userId}")]
-        public async Task<ActionResult<IEnumerable<Raqueta>>> GetRaquetasByUser(int userId)
+        public async Task<ActionResult<IEnumerable<RaquetaDto>>> GetRaquetasByUser(int userId)
         {
             var raquetas = await _raquetaService.GetRaquetasByUserIdAsync(userId);
             return Ok(raquetas);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Raqueta>> CreateRaqueta(Raqueta raqueta)
+        public async Task<ActionResult<RaquetaDto>> CreateRaqueta(RaquetaCreateDto raquetaDto)
         {
-            var newRaqueta = await _raquetaService.CreateRaquetaAsync(raqueta);
-            return CreatedAtAction(nameof(GetRaqueta), new { id = newRaqueta.RaquetaId }, newRaqueta);
+            try
+            {
+                var newRaqueta = await _raquetaService.CreateRaquetaAsync(raquetaDto);
+                return CreatedAtAction(nameof(GetRaqueta), new { id = newRaqueta.RaquetaId }, newRaqueta);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRaqueta(int id, Raqueta raqueta)
+        public async Task<IActionResult> UpdateRaqueta(int id, RaquetaUpdateDto raquetaDto)
         {
-            if (id != raqueta.RaquetaId)
+            try
             {
-                return BadRequest();
+                await _raquetaService.UpdateRaquetaAsync(id, raquetaDto);
+                return NoContent();
             }
-
-            var exists = await _raquetaService.ValidateRaquetaExistsAsync(id);
-            if (!exists)
+            catch (KeyNotFoundException)
             {
                 return NotFound();
             }
-
-            await _raquetaService.UpdateRaquetaAsync(id, raqueta);
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRaqueta(int id)
         {
-            var exists = await _raquetaService.ValidateRaquetaExistsAsync(id);
-            if (!exists)
+            try
+            {
+                await _raquetaService.DeleteRaquetaAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
             {
                 return NotFound();
             }
-
-            await _raquetaService.DeleteRaquetaAsync(id);
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StringHub.Models;
+using StringHub.DTOs;
 using StringHub.Services;
 
 namespace StringHub.Controllers
@@ -16,14 +16,14 @@ namespace StringHub.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<UsuarioDto>>> GetUsuarios()
         {
             var usuarios = await _usuarioService.GetAllUsuariosAsync();
             return Ok(usuarios);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+        public async Task<ActionResult<UsuarioDto>> GetUsuario(int id)
         {
             var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
 
@@ -36,7 +36,7 @@ namespace StringHub.Controllers
         }
 
         [HttpGet("email/{email}")]
-        public async Task<ActionResult<Usuario>> GetUsuarioByEmail(string email)
+        public async Task<ActionResult<UsuarioDto>> GetUsuarioByEmail(string email)
         {
             var usuario = await _usuarioService.GetUsuarioByEmailAsync(email);
 
@@ -49,11 +49,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Usuario>> CreateUsuario(Usuario usuario)
+        public async Task<ActionResult<UsuarioDto>> CreateUsuario(UsuarioCreateDto usuarioDto)
         {
             try
             {
-                var newUsuario = await _usuarioService.CreateUsuarioAsync(usuario);
+                var newUsuario = await _usuarioService.CreateUsuarioAsync(usuarioDto);
                 return CreatedAtAction(nameof(GetUsuario), new { id = newUsuario.UsuarioId }, newUsuario);
             }
             catch (InvalidOperationException ex)
@@ -63,16 +63,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUsuario(int id, Usuario usuario)
+        public async Task<IActionResult> UpdateUsuario(int id, UsuarioUpdateDto usuarioDto)
         {
-            if (id != usuario.UsuarioId)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                await _usuarioService.UpdateUsuarioAsync(id, usuario);
+                await _usuarioService.UpdateUsuarioAsync(id, usuarioDto);
                 return NoContent();
             }
             catch (KeyNotFoundException)

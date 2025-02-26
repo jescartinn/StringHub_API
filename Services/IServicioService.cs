@@ -1,13 +1,15 @@
-using StringHub.Models;
-namespace StringHub.Services;
+using StringHub.DTOs;
 
-public interface IServicioService
+namespace StringHub.Services
 {
-    Task<IEnumerable<Servicio>> GetAllServiciosAsync();
-    Task<IEnumerable<Servicio>> GetServiciosActivosAsync();
-    Task<Servicio?> GetServicioByIdAsync(int id);
-    Task<Servicio> CreateServicioAsync(Servicio servicio);
-    Task UpdateServicioAsync(int id, Servicio servicio);
-    Task DeleteServicioAsync(int id);
-    Task<bool> ValidateServicioExistsAsync(int id);
+    public interface IServicioService
+    {
+        Task<IEnumerable<ServicioDto>> GetAllServiciosAsync();
+        Task<IEnumerable<ServicioDto>> GetServiciosActivosAsync();
+        Task<ServicioDto?> GetServicioByIdAsync(int id);
+        Task<ServicioDto> CreateServicioAsync(ServicioCreateDto servicio);
+        Task UpdateServicioAsync(int id, ServicioUpdateDto servicio);
+        Task DeleteServicioAsync(int id);
+        Task<bool> ValidateServicioExistsAsync(int id);
+    }
 }

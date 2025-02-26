@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StringHub.Models;
+using StringHub.DTOs;
 using StringHub.Services;
 
 namespace StringHub.Controllers
@@ -16,21 +16,21 @@ namespace StringHub.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cuerda>>> GetCuerdas()
+        public async Task<ActionResult<IEnumerable<CuerdaDto>>> GetCuerdas()
         {
             var cuerdas = await _cuerdaService.GetAllCuerdasAsync();
             return Ok(cuerdas);
         }
 
         [HttpGet("activas")]
-        public async Task<ActionResult<IEnumerable<Cuerda>>> GetCuerdasActivas()
+        public async Task<ActionResult<IEnumerable<CuerdaDto>>> GetCuerdasActivas()
         {
             var cuerdas = await _cuerdaService.GetCuerdasActivasAsync();
             return Ok(cuerdas);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cuerda>> GetCuerda(int id)
+        public async Task<ActionResult<CuerdaDto>> GetCuerda(int id)
         {
             var cuerda = await _cuerdaService.GetCuerdaByIdAsync(id);
 
@@ -43,18 +43,18 @@ namespace StringHub.Controllers
         }
 
         [HttpGet("marca/{marca}")]
-        public async Task<ActionResult<IEnumerable<Cuerda>>> GetCuerdasByMarca(string marca)
+        public async Task<ActionResult<IEnumerable<CuerdaDto>>> GetCuerdasByMarca(string marca)
         {
             var cuerdas = await _cuerdaService.GetCuerdasByMarcaAsync(marca);
             return Ok(cuerdas);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Cuerda>> CreateCuerda(Cuerda cuerda)
+        public async Task<ActionResult<CuerdaDto>> CreateCuerda(CuerdaCreateDto cuerdaDto)
         {
             try
             {
-                var newCuerda = await _cuerdaService.CreateCuerdaAsync(cuerda);
+                var newCuerda = await _cuerdaService.CreateCuerdaAsync(cuerdaDto);
                 return CreatedAtAction(nameof(GetCuerda), new { id = newCuerda.CuerdaId }, newCuerda);
             }
             catch (InvalidOperationException ex)
@@ -64,16 +64,11 @@ namespace StringHub.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCuerda(int id, Cuerda cuerda)
+        public async Task<IActionResult> UpdateCuerda(int id, CuerdaUpdateDto cuerdaDto)
         {
-            if (id != cuerda.CuerdaId)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                await _cuerdaService.UpdateCuerdaAsync(id, cuerda);
+                await _cuerdaService.UpdateCuerdaAsync(id, cuerdaDto);
                 return NoContent();
             }
             catch (KeyNotFoundException)
