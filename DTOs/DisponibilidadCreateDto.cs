@@ -1,27 +1,19 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace StringHub.Models
+namespace StringHub.DTOs
 {
-    public class Disponibilidad
+    public class DisponibilidadCreateDto
     {
-        [Key]
-        public int DisponibilidadId { get; set; }
-
         [Required]
         public int EncordadorId { get; set; }
-
+        
         [Required, Range(1, 7)]
         public byte DiaSemana { get; set; }
-
+        
         [Required]
         public TimeSpan HoraInicio { get; set; }
-
+        
         [Required]
         public TimeSpan HoraFin { get; set; }
-
-        // Relaciones de navegación
-        [ForeignKey("EncordadorId")]
-        public Usuario? Encordador { get; set; }
     }
 }

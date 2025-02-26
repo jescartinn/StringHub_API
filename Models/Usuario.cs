@@ -1,25 +1,38 @@
-namespace StringHub.Models;
-public class Usuario
+using System.ComponentModel.DataAnnotations;
+
+namespace StringHub.Models
 {
-    public int UsuarioId { get; set; }
-    public string Email { get; set; }
-    public string Contraseña { get; set; }
-    public string Nombre { get; set; }
-    public string Apellido { get; set; }
-    public string? Telefono { get; set; }
-    public string TipoUsuario { get; set; }
-    public DateTime FechaCreacion { get; set; }
-    public DateTime UltimaModificacion { get; set; }
-
-    public Usuario() {} //parameterless constructor
-
-    public Usuario(string email, string nombre, string apellido, string tipoUsuario)
+    public class Usuario
     {
-        Email = email;
-        Nombre = nombre;
-        Apellido = apellido;
-        TipoUsuario = tipoUsuario;
-        FechaCreacion = DateTime.UtcNow;
-        UltimaModificacion = DateTime.UtcNow;
+        [Key]
+        public int UsuarioId { get; set; }
+        
+        [Required, MaxLength(100)]
+        public string Email { get; set; } = null!;
+        
+        [Required, MaxLength(255)]
+        public string Contraseña { get; set; } = null!;
+        
+        [Required, MaxLength(50)]
+        public string Nombre { get; set; } = null!;
+        
+        [Required, MaxLength(50)]
+        public string Apellido { get; set; } = null!;
+        
+        [MaxLength(20)]
+        public string? Telefono { get; set; }
+        
+        [Required, MaxLength(20)]
+        public string TipoUsuario { get; set; } = null!;
+        
+        public DateTime FechaCreacion { get; set; }
+        
+        public DateTime UltimaModificacion { get; set; }
+
+        // Relaciones de navegación
+        public ICollection<Raqueta>? Raquetas { get; set; }
+        public ICollection<OrdenEncordado>? OrdenesComoCliente { get; set; }
+        public ICollection<OrdenEncordado>? OrdenesProcesadas { get; set; }
+        public ICollection<Disponibilidad>? Disponibilidades { get; set; }
     }
 }

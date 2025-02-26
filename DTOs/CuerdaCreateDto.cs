@@ -1,37 +1,28 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace StringHub.Models
+namespace StringHub.DTOs
 {
-    public class Cuerda
+    public class CuerdaCreateDto
     {
-        [Key]
-        public int CuerdaId { get; set; }
-
         [Required, MaxLength(50)]
         public string Marca { get; set; } = null!;
-
+        
         [Required, MaxLength(50)]
         public string Modelo { get; set; } = null!;
-
+        
         [Required, MaxLength(20)]
         public string Calibre { get; set; } = null!;
-
+        
         [Required, MaxLength(50)]
         public string Material { get; set; } = null!;
-
+        
         [MaxLength(30)]
         public string? Color { get; set; }
-
-        [Required, Column(TypeName = "decimal(10,2)")]
+        
+        [Required, Range(0.01, 1000)]
         public decimal Precio { get; set; }
-
+        
+        [Range(0, 10000)]
         public int Stock { get; set; }
-
-        public bool Activo { get; set; }
-
-        // Relaciones de navegación
-        public ICollection<OrdenEncordado>? Ordenes { get; set; }
-        public ICollection<HistorialTension>? HistorialTensiones { get; set; }
     }
 }

@@ -1,25 +1,37 @@
-namespace StringHub.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class HistorialTension
+namespace StringHub.Models
 {
-    public int HistorialId { get; set; }
-    public int RaquetaId { get; set; }
-    public int OrdenId { get; set; }
-    public decimal TensionVertical { get; set; }
-    public decimal? TensionHorizontal { get; set; }
-    public int? CuerdaId { get; set; }
-    public DateTime Fecha { get; set; }
-
-    public HistorialTension() 
+    public class HistorialTension
     {
-        Fecha = DateTime.UtcNow;
-    }
+        [Key]
+        public int HistorialId { get; set; }
 
-    public HistorialTension(int raquetaId, int ordenId, decimal tensionVertical)
-    {
-        RaquetaId = raquetaId;
-        OrdenId = ordenId;
-        TensionVertical = tensionVertical;
-        Fecha = DateTime.UtcNow;
+        [Required]
+        public int RaquetaId { get; set; }
+
+        [Required]
+        public int OrdenId { get; set; }
+
+        [Required, Column(TypeName = "decimal(4,1)")]
+        public decimal TensionVertical { get; set; }
+
+        [Column(TypeName = "decimal(4,1)")]
+        public decimal? TensionHorizontal { get; set; }
+
+        public int? CuerdaId { get; set; }
+
+        public DateTime Fecha { get; set; }
+
+        // Relaciones de navegación
+        [ForeignKey("RaquetaId")]
+        public Raqueta? Raqueta { get; set; }
+
+        [ForeignKey("OrdenId")]
+        public OrdenEncordado? Orden { get; set; }
+
+        [ForeignKey("CuerdaId")]
+        public Cuerda? Cuerda { get; set; }
     }
 }

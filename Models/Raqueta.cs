@@ -1,20 +1,34 @@
-namespace StringHub.Models;
-public class Raqueta
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace StringHub.Models
 {
-    public int RaquetaId { get; set; }
-    public int UsuarioId { get; set; }
-    public string Marca { get; set; }
-    public string Modelo { get; set; }
-    public string? NumeroSerie { get; set; }
-    public string? Descripcion { get; set; }
-    public DateTime FechaCreacion { get; set; }
-
-    public Raqueta() {} //parameterless constructor
-
-    public Raqueta(string marca, string modelo)
+    public class Raqueta
     {
-        Marca = marca;
-        Modelo = modelo;
-        FechaCreacion = DateTime.UtcNow;
+        [Key]
+        public int RaquetaId { get; set; }
+        
+        [Required]
+        public int UsuarioId { get; set; }
+        
+        [Required, MaxLength(50)]
+        public string Marca { get; set; } = null!;
+        
+        [Required, MaxLength(50)]
+        public string Modelo { get; set; } = null!;
+        
+        [MaxLength(50)]
+        public string? NumeroSerie { get; set; }
+        
+        public string? Descripcion { get; set; }
+        
+        public DateTime FechaCreacion { get; set; }
+
+        // Relaciones de navegación
+        [ForeignKey("UsuarioId")]
+        public Usuario? Usuario { get; set; }
+        
+        public ICollection<HistorialTension>? HistorialTensiones { get; set; }
+        public ICollection<OrdenEncordado>? Ordenes { get; set; }
     }
 }

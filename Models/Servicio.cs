@@ -1,24 +1,27 @@
-namespace StringHub.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class Servicio
+namespace StringHub.Models
 {
-    public int ServicioId { get; set; }
-    public string NombreServicio { get; set; }
-    public string? Descripcion { get; set; }
-    public decimal PrecioBase { get; set; }
-    public int TiempoEstimado { get; set; }
-    public bool Activo { get; set; }
-
-    public Servicio() 
+    public class Servicio
     {
-        Activo = true;
-    }
+        [Key]
+        public int ServicioId { get; set; }
+        
+        [Required, MaxLength(100)]
+        public string NombreServicio { get; set; } = null!;
+        
+        public string? Descripcion { get; set; }
+        
+        [Required, Column(TypeName = "decimal(10,2)")]
+        public decimal PrecioBase { get; set; }
+        
+        [Required]
+        public int TiempoEstimado { get; set; }
+        
+        public bool Activo { get; set; }
 
-    public Servicio(string nombreServicio, decimal precioBase, int tiempoEstimado)
-    {
-        NombreServicio = nombreServicio;
-        PrecioBase = precioBase;
-        TiempoEstimado = tiempoEstimado;
-        Activo = true;
+        // Relaciones de navegación
+        public ICollection<OrdenEncordado>? Ordenes { get; set; }
     }
 }
